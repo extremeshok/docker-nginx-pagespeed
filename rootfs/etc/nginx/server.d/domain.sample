@@ -1,0 +1,89 @@
+# geoip_country /usr/share/GeoIP/GeoIP.dat;
+# map $geoip_country_code $my_block_country {
+# 	default 0;
+# #	CN 1;
+# #	HK 1;
+# #  ZA 1;
+# }
+
+########################## www httpS (443) to non-www https (443)  ##########################
+# server {
+#   listen 443 ssl http2;
+#   server_name www.mailcow.farm;
+#
+# 	ssl_certificate      /certs/test.mailcow.farm/fullchain.pem;
+#   ssl_certificate_key  /certs/test.mailcow.farm/privkey.pem;
+#   ssl_trusted_certificate   /certs/test.mailcow.farm/chain.pem;
+#
+#   include /etc/nginx/includes/ssl.conf;
+#
+#   return 302 https://mailcow.farm$request_uri;
+# }
+
+########################## *. httpS (443) ##########################
+server
+{
+  listen 443 ssl http2;
+  server_name test.mailcow.farm www.mailcow.farm;
+
+  root /var/www/html;
+  index index.htm index.html index.php;
+
+  access_log /var/log/nginx/access.log;
+  error_log /var/log/nginx/error.log warn;
+
+  ssl_certificate /certs/test.mailcow.farm/fullchain.pem;
+  ssl_certificate_key /certs/test.mailcow.farm/privkey.pem;
+  ## verify chain of trust of OCSP response using Root CA and Intermediate certs
+  ssl_trusted_certificate /certs/test.mailcow.farm/chain.pem;
+
+  pagespeed on;
+  pagespeed Domain https://test.mailcow.farm;
+
+  pagespeed SslCertDirectory /certs/;
+  pagespeed SslCertFile /certs/chain.pem;
+
+  pagespeed LoadFromFile "https://test.mailcow.farm" "/var/www/";
+  pagespeed LoadFromFile "https://mailcow.farm" "/var/www/";
+
+  #add_header X-debug-message "$geoip_country_code:$cookie_AdminID";
+
+  #  if ($geoip_country_code ~ (HK|CN|ZA)) { set $geoblock 1; }
+  #  if ($cookie_zenAdminID){ set $geoblock 0; }
+  location /
+  {
+    pagespeed on;
+    try_files $uri $uri/ /index.php;
+  }
+
+  location ~ .php/
+  {
+    ## Forward paths like /js/index.php/x.js to relevant handler
+    rewrite ^(.*.php)/ $1 last;
+  }
+
+
+  #
+  # location /admin/ { ## Allow admins only to view export folder
+  # 	auth_basic           "Restricted Area"; ## Message shown in login window
+  # 	auth_basic_user_file /etc/nginx/includes/htpasswd.conf;
+  #
+  # 	pagespeed off;
+  # }
+  # 	error_page 404 @error_404; #not found
+  # 	#error_page 401 @error_401; #auth denied
+  #
+  # #	location @error_401 {
+  # #    auth_basic off;
+  # #		return 302 https://test.mailcow.farm;
+  # #  }
+  #
+  # 	location @error_404 {
+  #     auth_basic off;
+  # 		return 302 https://test.mailcow.farm;
+  #   }
+  include /etc/nginx/include.d/*.conf;
+
+  include /etc/nginx/includes/php_geoip.conf;
+
+}
