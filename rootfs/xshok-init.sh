@@ -20,12 +20,18 @@ NGINX_DISABLE_PHP=${NGINX_DISABLE_PHP:-no}
 NGINX_PHP_FPM_HOST=${NGINX_PHP_FPM_HOST:-phpfpm}
 NGINX_PHP_FPM_PORT=${NGINX_PHP_FPM_PORT:-9000}
 NGINX_REDIRECT_WWW_TO_NON=${NGINX_REDIRECT_WWW_TO_NON:-yes}
+NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-32}
+
 
 NGINX_DOMAINS=${NGINX_DOMAINS:-$HOSTNAME}
 
 
 echo "#### Nginx Generating Configs ####"
 if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/nginx/include.d/" ] && [ -w "/etc/nginx/server.d/" ] ; then
+
+  # NGINX_MAX_UPLOAD_SIZE
+  NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE%%m}
+  echo "client_max_body_size ${NGINX_MAX_UPLOAD_SIZE}m;" > /etc/nginx/conf.d/max_upload_size.conf
 
   if [ "$NGINX_DISABLE_GEOIP" == "yes" ] || [ "$NGINX_DISABLE_GEOIP" == "true" ] || [ "$NGINX_DISABLE_GEOIP" == "on" ] || [ "$NGINX_DISABLE_GEOIP" == "1" ] ; then
     echo "GEOIP Disabled"
