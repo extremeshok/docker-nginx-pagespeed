@@ -25,10 +25,11 @@ NGINX_PHP_FPM_HOST=${NGINX_PHP_FPM_HOST:-phpfpm}
 NGINX_PHP_FPM_PORT=${NGINX_PHP_FPM_PORT:-9000}
 NGINX_REDIRECT_WWW_TO_NON=${NGINX_REDIRECT_WWW_TO_NON:-yes}
 NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-32}
-
+NGINX_WORDPRESS=${NGINX_WORDPRESS:-no}
+NGINX_WORDPRESS_SUPERCACHE=${NGINX_WORDPRESS_SUPERCACHE:-no}
+NGINX_WORDPRESS_CACHEENABLER=${NGINX_WORDPRESS_CACHEENABLER:-no}
 
 NGINX_DOMAINS=${NGINX_DOMAINS:-$HOSTNAME}
-
 
 echo "#### Nginx Generating Configs ####"
 if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/nginx/include.d/" ] && [ -w "/etc/nginx/server.d/" ] ; then
@@ -76,6 +77,15 @@ keepalive 2;
 }
 EOF
   fi
+  if [ "$NGINX_WORDPRESS" == "yes" ] || [ "$NGINX_WORDPRESS" == "true" ] || [ "$NGINX_WORDPRESS" == "on" ] || [ "$NGINX_WORDPRESS" == "1" ] ; then
+    echo "Wordpress Enabled"
+    mv -f /etc/nginx/conf.d/wordpress.conf /etc/nginx/conf.d/wordpress.disabled
+  else
+    if [ -f "/etc/nginx/conf.d/wordpress.disabled" ] ; then
+      mv -f /etc/nginx/conf.d/wordpress.disabled /etc/nginx/conf.d/wordpress.conf
+    fi
+  fi
+
 fi
 
 
