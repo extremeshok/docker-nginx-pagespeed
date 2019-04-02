@@ -78,14 +78,13 @@ keepalive 2;
 EOF
   fi
   if [ "$NGINX_WORDPRESS" == "yes" ] || [ "$NGINX_WORDPRESS" == "true" ] || [ "$NGINX_WORDPRESS" == "on" ] || [ "$NGINX_WORDPRESS" == "1" ] ; then
-    echo "Wordpress Enabled"
-    mv -f /etc/nginx/conf.d/wordpress.conf /etc/nginx/conf.d/wordpress.disabled
-  else
     if [ -f "/etc/nginx/conf.d/wordpress.disabled" ] ; then
       mv -f /etc/nginx/conf.d/wordpress.disabled /etc/nginx/conf.d/wordpress.conf
     fi
+  else
+    echo "Wordpress Enabled"
+    mv -f /etc/nginx/conf.d/wordpress.conf /etc/nginx/conf.d/wordpress.disabled
   fi
-
 fi
 
 
@@ -174,6 +173,13 @@ for myhostnames in ${NGINX_DOMAINS//\;/ } ; do
       sleep 3
     done
   fi
+
+if ! grep -q "BEGIN DH PARAMETERS" /certs/dhparam.pem || ! grep -q "END DH PARAMETERS" /certs/dhparam.pem ; then
+  echo "ERROR: Invalid DHPARAM /certs/dhparam.pem"
+  sleep 60
+  exit 1
+fi
+
 
   echo "#### Nginx Generating Configs ####"
   if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/nginx/include.d/" ] && [ -w "/etc/nginx/server.d/" ] ; then
