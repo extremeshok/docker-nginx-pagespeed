@@ -30,6 +30,8 @@ NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-32}
 NGINX_WORDPRESS=${NGINX_WORDPRESS:-no}
 NGINX_WORDPRESS_SUPERCACHE=${NGINX_WORDPRESS_SUPERCACHE:-no}
 NGINX_WORDPRESS_CACHEENABLER=${NGINX_WORDPRESS_CACHEENABLER:-no}
+NGINX_WORDPRESS_REDISCACHE=${NGINX_WORDPRESS_REDISCACHE:-no}
+NGINX_WORDPRESS_MEMCACHED=${NGINX_WORDPRESS_MEMCACHED:-no}
 
 echo "#### Nginx Generating Configs ####"
 if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/nginx/include.d/" ] && [ -w "/etc/nginx/server.d/" ] ; then
@@ -275,6 +277,22 @@ include /etc/nginx/includes/wordpress-cacheenabler.conf;
 location / {
   # for wp cache enabler plugin
   try_files \$cache_enabler_uri \$uri \$uri/ \$custom_subdir/index.php?\$args;
+}
+EOF
+elif [ "$NGINX_WORDPRESS_REDISCACHE" == "yes" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "true" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "on" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "1" ] ; then
+      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+include /etc/nginx/includes/wordpress-rediscache.conf;
+location / {
+  # Nginx level redis Wordpress
+  try_files $uri $uri/ /index.php?$args;
+}
+EOF
+elif [ "$NGINX_WORDPRESS_MEMCACHED" == "yes" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "true" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "on" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "1" ] ; then
+      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+include /etc/nginx/includes/wordpress-memcached.conf;
+location / {
+  # Nginx level redis Wordpress
+  try_files $uri $uri/ @memcached;
 }
 EOF
 else
