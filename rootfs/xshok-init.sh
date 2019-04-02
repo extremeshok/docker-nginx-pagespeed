@@ -260,43 +260,56 @@ EOF
     fi
 
     if [ "$NGINX_WORDPRESS" == "yes" ] || [ "$NGINX_WORDPRESS" == "true" ] || [ "$NGINX_WORDPRESS" == "on" ] || [ "$NGINX_WORDPRESS" == "1" ] ; then
+
+if [ "$NGINX_WORDPRESS_SUPERCACHE" == "yes" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "true" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "on" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "1" ] ; then
+  cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+include /etc/nginx/includes/wordpress-supercache.conf;
+location / {
+  # for wordpress super cache plugin
+  try_files /wp-content/cache/supercache/\$http_host/\$cache_uri/index.html \$uri \$uri/ /index.php?q=\$uri&\$args;
+}
+EOF
+elif [ "$NGINX_WORDPRESS_CACHEENABLER" == "yes" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "true" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "on" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "1" ] ; then
+      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+include /etc/nginx/includes/wordpress-cacheenabler.conf;
+location / {
+  # for wp cache enabler plugin
+  try_files \$cache_enabler_uri \$uri \$uri/ \$custom_subdir/index.php?\$args;
+}
+EOF
+else
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 location / {
-# Wordpress Permalinks
-try_files \$uri \$uri/ /index.php?q=\$uri&\$args;
+  # Wordpress Permalinks
+  try_files \$uri \$uri/ /index.php?q=\$uri&\$args;
 }
+EOF
+fi
 
+cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 location ~* /(wp-login\.php) {
     limit_req zone=xwplogin burst=1 nodelay;
     limit_conn xwpconlimit 30;
     #auth_basic "Private";
     #auth_basic_user_file htpasswd.conf;
-    #include /etc/nginx/includes/php-wpsc.conf;
-
     include /etc/nginx/includes/php_geoip.conf;
 }
 
 location ~* /(xmlrpc\.php) {
     limit_req zone=xwprpc burst=45 nodelay;
     limit_conn xwpconlimit 30;
-    #include /etc/nginx/includes/php-wpsc.conf;
-
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(load-scripts\.php) {
     limit_req zone=xwprpc burst=5 nodelay;
     limit_conn xwpconlimit 30;
-    #include /etc/nginx/includes/php-wpsc.conf;
-
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(load-styles\.php) {
     limit_req zone=xwprpc burst=5 nodelay;
     limit_conn xwpconlimit 30;
-    #include /etc/nginx/includes/php-wpsc.conf;
-
     include /etc/nginx/includes/php.conf;
 }
 
