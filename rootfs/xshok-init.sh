@@ -254,7 +254,7 @@ EOF
     fi
 
     if [ "$NGINX_WORDPRESS" == "yes" ] || [ "$NGINX_WORDPRESS" == "true" ] || [ "$NGINX_WORDPRESS" == "on" ] || [ "$NGINX_WORDPRESS" == "1" ] ; then
-        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 location / {
 # Wordpress Permalinks
 try_files \$uri \$uri/ /index.php?q=\$uri&\$args;
@@ -267,7 +267,7 @@ location ~* /(wp-login\.php) {
     #auth_basic_user_file htpasswd.conf;
     #include /etc/nginx/includes/php-wpsc.conf;
 
-    include /etc/nginx/includes/php-geoip.conf;
+    include /etc/nginx/includes/php_geoip.conf;
 }
 
 location ~* /(xmlrpc\.php) {
@@ -295,7 +295,7 @@ location ~* /wp-admin/(load-styles\.php) {
 }
 
 include /etc/nginx/includes/wordpress-secure.conf;
-include /etc/nginx/includes/php-geoip.conf;
+include /etc/nginx/includes/php_geoip.conf;
 include /etc/nginx/include.d/*.conf;
 EOF
     else
