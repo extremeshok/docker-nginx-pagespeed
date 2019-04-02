@@ -297,6 +297,7 @@ location ~* /wp-admin/(load-styles\.php) {
 include /etc/nginx/includes/wordpress-secure.conf;
 include /etc/nginx/includes/php_geoip.conf;
 include /etc/nginx/include.d/*.conf;
+}
 EOF
     else
       if [ "$NGINX_DISABLE_REWRITES" != "yes" ] && [ "$NGINX_DISABLE_REWRITES" != "true" ] && [ "$NGINX_DISABLE_REWRITES" != "on" ] && [ "$NGINX_DISABLE_REWRITES" != "1" ] ; then
