@@ -7,7 +7,6 @@
 ## enable case insensitve matching
 shopt -s nocaseglob
 
-
 # if [ ! -z "$PHP_EXTRA_EXTENSIONS" ] ; then
 #   for extension in ${PHP_EXTRA_EXTENSIONS//,/ } ; do
 #     extension="${extension#php7-}"
@@ -17,6 +16,8 @@ shopt -s nocaseglob
 #   done
 # fi
 
+NGINX_DOMAINS=${NGINX_DOMAINS:-$HOSTNAME}
+
 NGINX_DISABLE_REWRITES=${NGINX_DISABLE_REWRITES:-no}
 NGINX_DISABLE_PAGESPEED=${NGINX_DISABLE_PAGESPEED:-no}
 NGINX_DISABLE_GEOIP=${NGINX_DISABLE_GEOIP:-no}
@@ -25,11 +26,10 @@ NGINX_PHP_FPM_HOST=${NGINX_PHP_FPM_HOST:-phpfpm}
 NGINX_PHP_FPM_PORT=${NGINX_PHP_FPM_PORT:-9000}
 NGINX_REDIRECT_WWW_TO_NON=${NGINX_REDIRECT_WWW_TO_NON:-yes}
 NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-32}
+
 NGINX_WORDPRESS=${NGINX_WORDPRESS:-no}
 NGINX_WORDPRESS_SUPERCACHE=${NGINX_WORDPRESS_SUPERCACHE:-no}
 NGINX_WORDPRESS_CACHEENABLER=${NGINX_WORDPRESS_CACHEENABLER:-no}
-
-NGINX_DOMAINS=${NGINX_DOMAINS:-$HOSTNAME}
 
 echo "#### Nginx Generating Configs ####"
 if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/nginx/include.d/" ] && [ -w "/etc/nginx/server.d/" ] ; then
@@ -252,8 +252,55 @@ EOF
   pagespeed LoadFromFile "https://www.${primary_hostname}" "/var/www/html";
 EOF
     fi
-if [ "$NGINX_DISABLE_REWRITES" != "yes" ] && [ "$NGINX_DISABLE_REWRITES" != "true" ] && [ "$NGINX_DISABLE_REWRITES" != "on" ] && [ "$NGINX_DISABLE_REWRITES" != "1" ] ; then
-    cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+
+    if [ "$NGINX_WORDPRESS" == "yes" ] || [ "$NGINX_WORDPRESS" == "true" ] || [ "$NGINX_WORDPRESS" == "on" ] || [ "$NGINX_WORDPRESS" == "1" ] ; then
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+location / {
+# Wordpress Permalinks
+try_files \$uri \$uri/ /index.php?q=\$uri&\$args;
+}
+
+location ~* /(wp-login\.php) {
+    limit_req zone=xwplogin burst=1 nodelay;
+    limit_conn xwpconlimit 30;
+    #auth_basic "Private";
+    #auth_basic_user_file htpasswd.conf;
+    #include /etc/nginx/includes/php-wpsc.conf;
+
+    include /etc/nginx/includes/php-geoip.conf;
+}
+
+location ~* /(xmlrpc\.php) {
+    limit_req zone=xwprpc burst=45 nodelay;
+    limit_conn xwpconlimit 30;
+    #include /etc/nginx/includes/php-wpsc.conf;
+
+    include /etc/nginx/includes/php.conf;
+}
+
+location ~* /wp-admin/(load-scripts\.php) {
+    limit_req zone=xwprpc burst=5 nodelay;
+    limit_conn xwpconlimit 30;
+    #include /etc/nginx/includes/php-wpsc.conf;
+
+    include /etc/nginx/includes/php.conf;
+}
+
+location ~* /wp-admin/(load-styles\.php) {
+    limit_req zone=xwprpc burst=5 nodelay;
+    limit_conn xwpconlimit 30;
+    #include /etc/nginx/includes/php-wpsc.conf;
+
+    include /etc/nginx/includes/php.conf;
+}
+
+include /etc/nginx/includes/wordpress-secure.conf;
+include /etc/nginx/includes/php-geoip.conf;
+include /etc/nginx/include.d/*.conf;
+EOF
+    else
+      if [ "$NGINX_DISABLE_REWRITES" != "yes" ] && [ "$NGINX_DISABLE_REWRITES" != "true" ] && [ "$NGINX_DISABLE_REWRITES" != "on" ] && [ "$NGINX_DISABLE_REWRITES" != "1" ] ; then
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/include.d/*.conf;
 
 location @rewrite {
@@ -263,39 +310,40 @@ location / {
   try_files \$uri \$uri/ @rewrite;
 }
 EOF
-else
-  cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      else
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
   include /etc/nginx/include.d/*.conf;
 location /
 {
 try_files \$uri \$uri/ /index.php?\$args;
 }
 EOF
-fi
-cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      fi
+      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 location ~ .php/
 {
   ## Forward paths like /js/index.php/x.js to relevant handler
   rewrite ^(.*.php)/ \$1 last;
 }
 EOF
-    if [ "$NGINX_DISABLE_PHP" != "yes" ] && [ "$NGINX_DISABLE_PHP" != "true" ] && [ "$NGINX_DISABLE_PHP" != "on" ] && [ "$NGINX_DISABLE_PHP" != "1" ] ; then
-      if [ "$NGINX_DISABLE_GEOIP" == "yes" ] || [ "$NGINX_DISABLE_GEOIP" == "true" ] || [ "$NGINX_DISABLE_GEOIP" == "on" ] || [ "$NGINX_DISABLE_GEOIP" == "1" ] ; then
-        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      if [ "$NGINX_DISABLE_PHP" != "yes" ] && [ "$NGINX_DISABLE_PHP" != "true" ] && [ "$NGINX_DISABLE_PHP" != "on" ] && [ "$NGINX_DISABLE_PHP" != "1" ] ; then
+        if [ "$NGINX_DISABLE_GEOIP" == "yes" ] || [ "$NGINX_DISABLE_GEOIP" == "true" ] || [ "$NGINX_DISABLE_GEOIP" == "on" ] || [ "$NGINX_DISABLE_GEOIP" == "1" ] ; then
+          cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/php.conf;
 }
 EOF
-      else
-        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+        else
+          cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/php_geoip.conf;
 }
 EOF
-      fi
-    else
-      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+        fi
+      else
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/php_disabled.conf;
 }
 EOF
+      fi
     fi
   fi
 done
