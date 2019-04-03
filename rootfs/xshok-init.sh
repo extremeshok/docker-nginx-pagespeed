@@ -231,8 +231,13 @@ EOF
     else
       echo "root /var/www/html;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
     fi
+  if [ "$NGINX_DISABLE_PHP" != "yes" ] && [ "$NGINX_DISABLE_PHP" != "true" ] && [ "$NGINX_DISABLE_PHP" != "on" ] && [ "$NGINX_DISABLE_PHP" != "1" ] ; then
+echo "index index.php index.html index.htm;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
+  else
+echo "index index.html index.htm;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
+  fi
+
     cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
-index index.php index.html index.htm;
 access_log /dev/stdout;
 error_log /dev/stderr warn;
 EOF
