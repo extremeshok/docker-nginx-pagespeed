@@ -232,7 +232,7 @@ EOF
       echo "root /var/www/html;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
     fi
     cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
-index index.htm index.html index.php;
+index index.php index.html index.htm;
 access_log /dev/stdout;
 error_log /dev/stderr warn;
 EOF
