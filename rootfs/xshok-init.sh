@@ -176,11 +176,11 @@ for myhostnames in ${NGINX_DOMAINS//\;/ } ; do
     done
   fi
 
-if ! grep -q "BEGIN DH PARAMETERS" /certs/dhparam.pem || ! grep -q "END DH PARAMETERS" /certs/dhparam.pem ; then
-  echo "ERROR: Invalid DHPARAM /certs/dhparam.pem"
-  sleep 60
-  exit 1
-fi
+  if ! grep -q "BEGIN DH PARAMETERS" /certs/dhparam.pem || ! grep -q "END DH PARAMETERS" /certs/dhparam.pem ; then
+    echo "ERROR: Invalid DHPARAM /certs/dhparam.pem"
+    sleep 60
+    exit 1
+  fi
 
 
   echo "#### Nginx Generating Configs ####"
@@ -231,11 +231,11 @@ EOF
     else
       echo "root /var/www/html;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
     fi
-  if [ "$NGINX_DISABLE_PHP" != "yes" ] && [ "$NGINX_DISABLE_PHP" != "true" ] && [ "$NGINX_DISABLE_PHP" != "on" ] && [ "$NGINX_DISABLE_PHP" != "1" ] ; then
-echo "index index.php index.html index.htm;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
-  else
-echo "index index.html index.htm;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
-  fi
+    if [ "$NGINX_DISABLE_PHP" != "yes" ] && [ "$NGINX_DISABLE_PHP" != "true" ] && [ "$NGINX_DISABLE_PHP" != "on" ] && [ "$NGINX_DISABLE_PHP" != "1" ] ; then
+      echo "index index.php index.html index.htm;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
+    else
+      echo "index index.html index.htm;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
+    fi
 
     cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 access_log /dev/stdout;
@@ -268,48 +268,48 @@ EOF
 
     if [ "$NGINX_WORDPRESS" == "yes" ] || [ "$NGINX_WORDPRESS" == "true" ] || [ "$NGINX_WORDPRESS" == "on" ] || [ "$NGINX_WORDPRESS" == "1" ] ; then
 
-if [ "$NGINX_WORDPRESS_SUPERCACHE" == "yes" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "true" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "on" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "1" ] ; then
-  cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      if [ "$NGINX_WORDPRESS_SUPERCACHE" == "yes" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "true" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "on" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "1" ] ; then
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/wordpress-supercache.conf;
 location / {
   # for wordpress super cache plugin
   try_files /wp-content/cache/supercache/\$http_host/\$cache_uri/index.html \$uri \$uri/ /index.php?q=\$uri&\$args;
 }
 EOF
-elif [ "$NGINX_WORDPRESS_CACHEENABLER" == "yes" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "true" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "on" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "1" ] ; then
-      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      elif [ "$NGINX_WORDPRESS_CACHEENABLER" == "yes" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "true" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "on" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "1" ] ; then
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/wordpress-cacheenabler.conf;
 location / {
   # for wp cache enabler plugin
   try_files \$cache_enabler_uri \$uri \$uri/ \$custom_subdir/index.php?\$args;
 }
 EOF
-elif [ "$NGINX_WORDPRESS_REDISCACHE" == "yes" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "true" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "on" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "1" ] ; then
-      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      elif [ "$NGINX_WORDPRESS_REDISCACHE" == "yes" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "true" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "on" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "1" ] ; then
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/wordpress-rediscache.conf;
 location / {
   # Nginx level redis Wordpress
   try_files $uri $uri/ /index.php?$args;
 }
 EOF
-elif [ "$NGINX_WORDPRESS_MEMCACHED" == "yes" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "true" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "on" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "1" ] ; then
-      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      elif [ "$NGINX_WORDPRESS_MEMCACHED" == "yes" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "true" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "on" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "1" ] ; then
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/wordpress-memcached.conf;
 location / {
   # Nginx level redis Wordpress
   try_files $uri $uri/ @memcached;
 }
 EOF
-else
-      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      else
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 location / {
   # Wordpress Permalinks
   try_files \$uri \$uri/ /index.php?q=\$uri&\$args;
 }
 EOF
-fi
+      fi
 
-cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 location ~* /(wp-login\.php) {
     limit_req zone=xwplogin burst=1 nodelay;
     limit_conn xwpconlimit 30;
