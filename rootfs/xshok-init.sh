@@ -16,31 +16,41 @@ shopt -s nocaseglob
 #   done
 # fi
 
-NGINX_DOMAINS=${NGINX_DOMAINS:-$HOSTNAME}
+XS_DOMAINS=${NGINX_DOMAINS:-$HOSTNAME}
 
-NGINX_DISABLE_REWRITES=${NGINX_DISABLE_REWRITES:-no}
-NGINX_DISABLE_PAGESPEED=${NGINX_DISABLE_PAGESPEED:-no}
-NGINX_DISABLE_GEOIP=${NGINX_DISABLE_GEOIP:-no}
-NGINX_DISABLE_PHP=${NGINX_DISABLE_PHP:-no}
-NGINX_PHP_FPM_HOST=${NGINX_PHP_FPM_HOST:-phpfpm}
-NGINX_PHP_FPM_PORT=${NGINX_PHP_FPM_PORT:-9000}
-NGINX_REDIRECT_WWW_TO_NON=${NGINX_REDIRECT_WWW_TO_NON:-yes}
-NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-32}
+XS_DISABLE_REWRITES=${NGINX_DISABLE_REWRITES:-no}
+XS_DISABLE_PAGESPEED=${NGINX_DISABLE_PAGESPEED:-no}
+XS_DISABLE_GEOIP=${NGINX_DISABLE_GEOIP:-no}
+XS_DISABLE_SECURITYBLOCKS=${NGINX_DISABLE_SECURITYBLOCKS:-no}
+XS_DISABLE_PHP=${NGINX_DISABLE_PHP:-no}
+XS_PHP_FPM_HOST=${NGINX_PHP_FPM_HOST:-phpfpm}
+XS_PHP_FPM_PORT=${NGINX_PHP_FPM_PORT:-9000}
+XS_REDIRECT_WWW_TO_NON=${NGINX_REDIRECT_WWW_TO_NON:-yes}
+XS_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-32}
 
-NGINX_WORDPRESS=${NGINX_WORDPRESS:-no}
-NGINX_WORDPRESS_SUPERCACHE=${NGINX_WORDPRESS_SUPERCACHE:-no}
-NGINX_WORDPRESS_CACHEENABLER=${NGINX_WORDPRESS_CACHEENABLER:-no}
-NGINX_WORDPRESS_REDISCACHE=${NGINX_WORDPRESS_REDISCACHE:-no}
-NGINX_WORDPRESS_MEMCACHED=${NGINX_WORDPRESS_MEMCACHED:-no}
+XS_WORDPRESS=${NGINX_WORDPRESS:-no}
+XS_WORDPRESS_SUPERCACHE=${NGINX_WORDPRESS_SUPERCACHE:-no}
+XS_WORDPRESS_CACHEENABLER=${NGINX_WORDPRESS_CACHEENABLER:-no}
+XS_WORDPRESS_REDISCACHE=${NGINX_WORDPRESS_REDISCACHE:-no}
+XS_WORDPRESS_MEMCACHED=${NGINX_WORDPRESS_MEMCACHED:-no}
 
 echo "#### Nginx Generating Configs ####"
 if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/nginx/include.d/" ] && [ -w "/etc/nginx/server.d/" ] ; then
 
-  # NGINX_MAX_UPLOAD_SIZE
-  NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE%%m}
-  echo "client_max_body_size ${NGINX_MAX_UPLOAD_SIZE}m;" > /etc/nginx/conf.d/max_upload_size.conf
+  # XS_MAX_UPLOAD_SIZE
+  XS_MAX_UPLOAD_SIZE=${XS_MAX_UPLOAD_SIZE%%m}
+  echo "client_max_body_size ${XS_MAX_UPLOAD_SIZE}m;" > /etc/nginx/conf.d/max_upload_size.conf
 
-  if [ "$NGINX_DISABLE_GEOIP" == "yes" ] || [ "$NGINX_DISABLE_GEOIP" == "true" ] || [ "$NGINX_DISABLE_GEOIP" == "on" ] || [ "$NGINX_DISABLE_GEOIP" == "1" ] ; then
+  if [ "$XS_DISABLE_SECURITYBLOCKS" == "yes" ] || [ "$XS_DISABLE_SECURITYBLOCKS" == "true" ] || [ "$XS_DISABLE_SECURITYBLOCKS" == "on" ] || [ "$XS_DISABLE_SECURITYBLOCKS" == "1" ] ; then
+    echo "Securityblocks Disabled"
+    mv -f /etc/nginx/include.d/securityblocks.conf /etc/nginx/include.d/securityblocks.disabled
+  else
+    if [ -f "/etc/nginx/include.d/securityblocks.disabled" ] ; then
+      mv -f /etc/nginx/include.d/securityblocks.disabled /etc/nginx/include.d/securityblocks.conf
+    fi
+  fi
+
+  if [ "$XS_DISABLE_GEOIP" == "yes" ] || [ "$XS_DISABLE_GEOIP" == "true" ] || [ "$XS_DISABLE_GEOIP" == "on" ] || [ "$XS_DISABLE_GEOIP" == "1" ] ; then
     echo "GEOIP Disabled"
     mv -f /etc/nginx/modules/http_geoip.conf /etc/nginx/modules/http_geoip.disabled
     mv -f /etc/nginx/conf.d/geoip.conf /etc/nginx/conf.d/geoip.disabled
@@ -52,7 +62,7 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
       mv -f /etc/nginx/conf.d/geoip.disabled /etc/nginx/conf.d/geoip.conf
     fi
   fi
-  if [ "$NGINX_DISABLE_PAGESPEED" == "yes" ] || [ "$NGINX_DISABLE_PAGESPEED" == "true" ] || [ "$NGINX_DISABLE_PAGESPEED" == "on" ] || [ "$NGINX_DISABLE_PAGESPEED" == "1" ] ; then
+  if [ "$XS_DISABLE_PAGESPEED" == "yes" ] || [ "$XS_DISABLE_PAGESPEED" == "true" ] || [ "$XS_DISABLE_PAGESPEED" == "on" ] || [ "$XS_DISABLE_PAGESPEED" == "1" ] ; then
     echo "Pagespeed Disabled"
     mv -f /etc/nginx/conf.d/pagespeed.conf /etc/nginx/conf.d/pagespeed.disabled
     mv -f /etc/nginx/include.d/pagespeed.conf /etc/nginx/include.d/pagespeed.disabled
@@ -64,7 +74,7 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
       mv -f /etc/nginx/include.d/pagespeed.disabled /etc/nginx/include.d/pagespeed.conf
     fi
   fi
-  if [ "$NGINX_DISABLE_PHP" == "yes" ] || [ "$NGINX_DISABLE_PHP" == "true" ] || [ "$NGINX_DISABLE_PHP" == "on" ] || [ "$NGINX_DISABLE_PHP" == "1" ] ; then
+  if [ "$XS_DISABLE_PHP" == "yes" ] || [ "$XS_DISABLE_PHP" == "true" ] || [ "$XS_DISABLE_PHP" == "on" ] || [ "$XS_DISABLE_PHP" == "1" ] ; then
     echo "PHP Disabled"
     mv -f /etc/nginx/conf.d/php_upstream.conf /etc/nginx/conf.d/php_upstream.disabled
   else
@@ -74,12 +84,12 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
     cat << EOF > /etc/nginx/conf.d/php_upstream.conf
 upstream php_upstream {
 zone php_upstream_zone 128k;
-server ${NGINX_PHP_FPM_HOST}:${NGINX_PHP_FPM_PORT};
+server ${XS_PHP_FPM_HOST}:${XS_PHP_FPM_PORT};
 keepalive 2;
 }
 EOF
   fi
-  if [ "$NGINX_WORDPRESS" == "yes" ] || [ "$NGINX_WORDPRESS" == "true" ] || [ "$NGINX_WORDPRESS" == "on" ] || [ "$NGINX_WORDPRESS" == "1" ] ; then
+  if [ "$XS_WORDPRESS" == "yes" ] || [ "$XS_WORDPRESS" == "true" ] || [ "$XS_WORDPRESS" == "on" ] || [ "$XS_WORDPRESS" == "1" ] ; then
     if [ -f "/etc/nginx/conf.d/wordpress.disabled" ] ; then
       mv -f /etc/nginx/conf.d/wordpress.disabled /etc/nginx/conf.d/wordpress.conf
     fi
@@ -90,13 +100,13 @@ EOF
 fi
 
 
-for myhostnames in ${NGINX_DOMAINS//\;/ } ; do
+for myhostnames in ${XS_DOMAINS//\;/ } ; do
   echo "${myhostnames}"
   primary_hostname="${myhostnames%%,*}"
   secondary_hostnames="${myhostnames#*,}"
 
   if [ "$secondary_hostnames" != "" ] && [ "$secondary_hostnames" != " " ]; then
-    if [ "$NGINX_REDIRECT_WWW_TO_NON" == "yes" ] || [ "$NGINX_REDIRECT_WWW_TO_NON" == "true" ] || [ "$NGINX_REDIRECT_WWW_TO_NON" == "on" ] || [ "$NGINX_REDIRECT_WWW_TO_NON" == "1" ] ; then
+    if [ "$XS_REDIRECT_WWW_TO_NON" == "yes" ] || [ "$XS_REDIRECT_WWW_TO_NON" == "true" ] || [ "$XS_REDIRECT_WWW_TO_NON" == "on" ] || [ "$XS_REDIRECT_WWW_TO_NON" == "1" ] ; then
       primary_hostname="${primary_hostname/www.}"
       secondary_hostnames="${secondary_hostnames/www.}"
       secondary_hostnames=",${secondary_hostnames},"
@@ -187,7 +197,7 @@ for myhostnames in ${NGINX_DOMAINS//\;/ } ; do
   if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/nginx/include.d/" ] && [ -w "/etc/nginx/server.d/" ] ; then
     echo "#### Generating Nginx Domain config for ${primary_hostname} ####"
     echo "# $(date)" > "/etc/nginx/server.d/${primary_hostname}.conf"
-    if [ "$NGINX_REDIRECT_WWW_TO_NON" == "yes" ] || [ "$NGINX_REDIRECT_WWW_TO_NON" == "true" ] || [ "$NGINX_REDIRECT_WWW_TO_NON" == "on" ] || [ "$NGINX_REDIRECT_WWW_TO_NON" == "1" ] ; then
+    if [ "$XS_REDIRECT_WWW_TO_NON" == "yes" ] || [ "$XS_REDIRECT_WWW_TO_NON" == "true" ] || [ "$XS_REDIRECT_WWW_TO_NON" == "on" ] || [ "$XS_REDIRECT_WWW_TO_NON" == "1" ] ; then
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 ########################## www httpS (443) to non-www https (443)  ##########################
 server {
@@ -220,7 +230,7 @@ EOF
 server {
 listen 443 ssl http2 backlog=256;
 EOF
-      if [ "$NGINX_REDIRECT_WWW_TO_NON" != "yes" ] && [ "$NGINX_REDIRECT_WWW_TO_NON" != "true" ] && [ "$NGINX_REDIRECT_WWW_TO_NON" != "on" ] && [ "$NGINX_REDIRECT_WWW_TO_NON" != "1" ] && [ "${primary_hostname:0:4}" != "www." ] ; then
+      if [ "$XS_REDIRECT_WWW_TO_NON" != "yes" ] && [ "$XS_REDIRECT_WWW_TO_NON" != "true" ] && [ "$XS_REDIRECT_WWW_TO_NON" != "on" ] && [ "$XS_REDIRECT_WWW_TO_NON" != "1" ] && [ "${primary_hostname:0:4}" != "www." ] ; then
         echo "server_name ${primary_hostname} www.${primary_hostname} ${secondary_hostnames};" >> "/etc/nginx/server.d/${primary_hostname}.conf"
       else
         echo "server_name ${primary_hostname} ${secondary_hostnames};" >> "/etc/nginx/server.d/${primary_hostname}.conf"
@@ -231,7 +241,7 @@ EOF
     else
       echo "root /var/www/html;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
     fi
-    if [ "$NGINX_DISABLE_PHP" != "yes" ] && [ "$NGINX_DISABLE_PHP" != "true" ] && [ "$NGINX_DISABLE_PHP" != "on" ] && [ "$NGINX_DISABLE_PHP" != "1" ] ; then
+    if [ "$XS_DISABLE_PHP" != "yes" ] && [ "$XS_DISABLE_PHP" != "true" ] && [ "$XS_DISABLE_PHP" != "on" ] && [ "$XS_DISABLE_PHP" != "1" ] ; then
       echo "index index.php index.html index.htm;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
     else
       echo "index index.html index.htm;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
@@ -253,7 +263,7 @@ ssl_certificate /certs/cert.pem;
 ssl_certificate_key /certs/privkey.pem;
 EOF
     fi
-    if [ "$NGINX_DISABLE_PAGESPEED" != "yes" ] && [ "$NGINX_DISABLE_PAGESPEED" != "true" ] && [ "$NGINX_DISABLE_PAGESPEED" != "on" ] && [ "$NGINX_DISABLE_PAGESPEED" != "1" ] ; then
+    if [ "$XS_DISABLE_PAGESPEED" != "yes" ] && [ "$XS_DISABLE_PAGESPEED" != "true" ] && [ "$XS_DISABLE_PAGESPEED" != "on" ] && [ "$XS_DISABLE_PAGESPEED" != "1" ] ; then
       if [ -r "/certs/${primary_hostname}/fullchain.pem" ] && [ -r "/certs/${primary_hostname}/privkey.pem" ] && [ -r "/certs/${primary_hostname}/chain.pem" ] ; then
         echo "pagespeed SslCertFile /certs/${primary_hostname}/chain.pem;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
       fi
@@ -266,38 +276,38 @@ EOF
 EOF
     fi
 
-    if [ "$NGINX_WORDPRESS" == "yes" ] || [ "$NGINX_WORDPRESS" == "true" ] || [ "$NGINX_WORDPRESS" == "on" ] || [ "$NGINX_WORDPRESS" == "1" ] ; then
+    if [ "$XS_WORDPRESS" == "yes" ] || [ "$XS_WORDPRESS" == "true" ] || [ "$XS_WORDPRESS" == "on" ] || [ "$XS_WORDPRESS" == "1" ] ; then
 
-      if [ "$NGINX_WORDPRESS_SUPERCACHE" == "yes" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "true" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "on" ] || [ "$NGINX_WORDPRESS_SUPERCACHE" == "1" ] ; then
-        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
-include /etc/nginx/includes/wordpress-supercache.conf;
-location / {
-  # for wordpress super cache plugin
-  try_files /wp-content/cache/supercache/\$http_host/\$cache_uri/index.html \$uri \$uri/ /index.php?q=\$uri&\$args;
-}
-EOF
-      elif [ "$NGINX_WORDPRESS_CACHEENABLER" == "yes" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "true" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "on" ] || [ "$NGINX_WORDPRESS_CACHEENABLER" == "1" ] ; then
+      if [ "$XS_WORDPRESS_CACHEENABLER" == "yes" ] || [ "$XS_WORDPRESS_CACHEENABLER" == "true" ] || [ "$XS_WORDPRESS_CACHEENABLER" == "on" ] || [ "$XS_WORDPRESS_CACHEENABLER" == "1" ] ; then
         cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/wordpress-cacheenabler.conf;
 location / {
   # for wp cache enabler plugin
-  try_files \$cache_enabler_uri \$uri \$uri/ \$custom_subdir/index.php?\$args;
+  try_files \$cache_enabler_uri \$uri \$uri/ /index.php?\$args;
 }
 EOF
-      elif [ "$NGINX_WORDPRESS_REDISCACHE" == "yes" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "true" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "on" ] || [ "$NGINX_WORDPRESS_REDISCACHE" == "1" ] ; then
+      elif [ "$XS_WORDPRESS_SUPERCACHE" == "yes" ] || [ "$XS_WORDPRESS_SUPERCACHE" == "true" ] || [ "$XS_WORDPRESS_SUPERCACHE" == "on" ] || [ "$XS_WORDPRESS_SUPERCACHE" == "1" ] ; then
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+include /etc/nginx/includes/wordpress-supercache.conf;
+location / {
+  # for wordpress super cache plugin
+  try_files /var/www/cache/\$cache_uri/index.html \$uri \$uri/ /index.php?q=\$uri&\$args;
+}
+EOF
+      elif [ "$XS_WORDPRESS_REDISCACHE" == "yes" ] || [ "$XS_WORDPRESS_REDISCACHE" == "true" ] || [ "$XS_WORDPRESS_REDISCACHE" == "on" ] || [ "$XS_WORDPRESS_REDISCACHE" == "1" ] ; then
         cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/wordpress-rediscache.conf;
 location / {
   # Nginx level redis Wordpress
-  try_files $uri $uri/ /index.php?$args;
+  try_files \$uri \$uri/ /index.php?\$args;
 }
 EOF
-      elif [ "$NGINX_WORDPRESS_MEMCACHED" == "yes" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "true" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "on" ] || [ "$NGINX_WORDPRESS_MEMCACHED" == "1" ] ; then
+      elif [ "$XS_WORDPRESS_MEMCACHED" == "yes" ] || [ "$XS_WORDPRESS_MEMCACHED" == "true" ] || [ "$XS_WORDPRESS_MEMCACHED" == "on" ] || [ "$XS_WORDPRESS_MEMCACHED" == "1" ] ; then
         cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/wordpress-memcached.conf;
 location / {
   # Nginx level redis Wordpress
-  try_files $uri $uri/ @memcached;
+  try_files \$uri \$uri/ @memcached;
 }
 EOF
       else
@@ -342,7 +352,7 @@ include /etc/nginx/include.d/*.conf;
 }
 EOF
     else
-      if [ "$NGINX_DISABLE_REWRITES" != "yes" ] && [ "$NGINX_DISABLE_REWRITES" != "true" ] && [ "$NGINX_DISABLE_REWRITES" != "on" ] && [ "$NGINX_DISABLE_REWRITES" != "1" ] ; then
+      if [ "$XS_DISABLE_REWRITES" != "yes" ] && [ "$XS_DISABLE_REWRITES" != "true" ] && [ "$XS_DISABLE_REWRITES" != "on" ] && [ "$XS_DISABLE_REWRITES" != "1" ] ; then
         cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/include.d/*.conf;
 
@@ -369,8 +379,8 @@ location ~ .php/
   rewrite ^(.*.php)/ \$1 last;
 }
 EOF
-      if [ "$NGINX_DISABLE_PHP" != "yes" ] && [ "$NGINX_DISABLE_PHP" != "true" ] && [ "$NGINX_DISABLE_PHP" != "on" ] && [ "$NGINX_DISABLE_PHP" != "1" ] ; then
-        if [ "$NGINX_DISABLE_GEOIP" == "yes" ] || [ "$NGINX_DISABLE_GEOIP" == "true" ] || [ "$NGINX_DISABLE_GEOIP" == "on" ] || [ "$NGINX_DISABLE_GEOIP" == "1" ] ; then
+      if [ "$XS_DISABLE_PHP" != "yes" ] && [ "$XS_DISABLE_PHP" != "true" ] && [ "$XS_DISABLE_PHP" != "on" ] && [ "$XS_DISABLE_PHP" != "1" ] ; then
+        if [ "$XS_DISABLE_GEOIP" == "yes" ] || [ "$XS_DISABLE_GEOIP" == "true" ] || [ "$XS_DISABLE_GEOIP" == "on" ] || [ "$XS_DISABLE_GEOIP" == "1" ] ; then
           cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/php.conf;
 }
@@ -391,13 +401,13 @@ EOF
   fi
 done
 
-if [ "$NGINX_DISABLE_PHP" != "yes" ] && [ "$NGINX_DISABLE_PHP" != "true" ] && [ "$NGINX_DISABLE_PHP" != "on" ] && [ "$NGINX_DISABLE_PHP" != "1" ] ; then
-  while ! nc -z -v $NGINX_PHP_FPM_HOST $NGINX_PHP_FPM_PORT 2> /dev/null ; do
-    echo "Waiting for PHP-FPM ${NGINX_PHP_FPM_HOST}:${NGINX_PHP_FPM_PORT} ..."
+if [ "$XS_DISABLE_PHP" != "yes" ] && [ "$XS_DISABLE_PHP" != "true" ] && [ "$XS_DISABLE_PHP" != "on" ] && [ "$XS_DISABLE_PHP" != "1" ] ; then
+  while ! nc -z -v $XS_PHP_FPM_HOST $XS_PHP_FPM_PORT 2> /dev/null ; do
+    echo "Waiting for PHP-FPM ${XS_PHP_FPM_HOST}:${XS_PHP_FPM_PORT} ..."
     sleep 2
   done
 fi
-if [ "$NGINX_DISABLE_GEOIP" != "yes" ] && [ "$NGINX_DISABLE_GEOIP" != "true" ] && [ "$NGINX_DISABLE_GEOIP" != "on" ] && [ "$NGINX_DISABLE_GEOIP" != "1" ] ; then
+if [ "$XS_DISABLE_GEOIP" != "yes" ] && [ "$XS_DISABLE_GEOIP" != "true" ] && [ "$XS_DISABLE_GEOIP" != "on" ] && [ "$XS_DISABLE_GEOIP" != "1" ] ; then
   while ! [ -f "/usr/share/GeoIP/GeoIP.dat" ] ; do
     echo "Waiting for /usr/share/GeoIP/GeoIP.dat ..."
     sleep 2
