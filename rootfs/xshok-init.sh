@@ -31,7 +31,7 @@ XS_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-32}
 
 XS_WORDPRESS=${NGINX_WORDPRESS:-no}
 XS_WORDPRESS_SUPERCACHE=${NGINX_WORDPRESS_SUPERCACHE:-no}
-XS_WORDPRESS_CACHEENABLER=${NGINX_WORDPRESS_CACHEENABLER:-no}
+XS_WORDPRESS_CACHE_ENABLER=${NGINX_WORDPRESS_CACHE_ENABLER:-no}
 XS_WORDPRESS_REDISCACHE=${NGINX_WORDPRESS_REDISCACHE:-no}
 XS_WORDPRESS_MEMCACHED=${NGINX_WORDPRESS_MEMCACHED:-no}
 
@@ -292,7 +292,7 @@ EOF
 
     if [ "$XS_WORDPRESS" == "yes" ] || [ "$XS_WORDPRESS" == "true" ] || [ "$XS_WORDPRESS" == "on" ] || [ "$XS_WORDPRESS" == "1" ] ; then
 
-      if [ "$XS_WORDPRESS_CACHEENABLER" == "yes" ] || [ "$XS_WORDPRESS_CACHEENABLER" == "true" ] || [ "$XS_WORDPRESS_CACHEENABLER" == "on" ] || [ "$XS_WORDPRESS_CACHEENABLER" == "1" ] ; then
+      if [ "$XS_WORDPRESS_CACHE_ENABLER" == "yes" ] || [ "$XS_WORDPRESS_CACHE_ENABLER" == "true" ] || [ "$XS_WORDPRESS_CACHE_ENABLER" == "on" ] || [ "$XS_WORDPRESS_CACHE_ENABLER" == "1" ] ; then
         cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 include /etc/nginx/includes/wordpress-cacheenabler.conf;
 location / {
