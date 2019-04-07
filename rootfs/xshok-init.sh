@@ -22,6 +22,7 @@ XS_DISABLE_REWRITES=${NGINX_DISABLE_REWRITES:-no}
 XS_DISABLE_PAGESPEED=${NGINX_DISABLE_PAGESPEED:-no}
 XS_DISABLE_GEOIP=${NGINX_DISABLE_GEOIP:-no}
 XS_DISABLE_SECURITYBLOCKS=${NGINX_DISABLE_SECURITYBLOCKS:-no}
+XS_DISABLE_BOTLIMIT=${NGINX_DISABLE_BOTLIMIT:-no}
 XS_DISABLE_PHP=${NGINX_DISABLE_PHP:-no}
 XS_PHP_FPM_HOST=${NGINX_PHP_FPM_HOST:-phpfpm}
 XS_PHP_FPM_PORT=${NGINX_PHP_FPM_PORT:-9000}
@@ -47,6 +48,19 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
   else
     if [ -f "/etc/nginx/include.d/securityblocks.disabled" ] ; then
       mv -f /etc/nginx/include.d/securityblocks.disabled /etc/nginx/include.d/securityblocks.conf
+    fi
+  fi
+
+  if [ "$XS_DISABLE_BOTLIMIT" == "yes" ] || [ "$XS_DISABLE_BOTLIMIT" == "true" ] || [ "$XS_DISABLE_BOTLIMIT" == "on" ] || [ "$XS_DISABLE_BOTLIMIT" == "1" ] ; then
+    echo "Botlimit Disabled"
+    mv -f /etc/nginx/include.d/blockbots.conf /etc/nginx/include.d/blockbots.disabled
+    mv -f /etc/nginx/conf.d/botlimit.conf /etc/nginx/conf.d/botlimit.disabled
+  else
+    if [ -f "/etc/nginx/include.d/blockbots.disabled" ] ; then
+      mv -f /etc/nginx/include.d/blockbots.disabled /etc/nginx/include.d/blockbots.conf
+    fi
+    if [ -f "/etc/nginx/conf.d/botlimit.disabled" ] ; then
+      mv -f /etc/nginx/conf.d/botlimit.disabled /etc/nginx/conf.d/botlimit.conf
     fi
   fi
 
