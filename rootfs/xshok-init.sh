@@ -18,6 +18,8 @@ shopt -s nocaseglob
 
 XS_DOMAINS=${NGINX_DOMAINS:-$HOSTNAME}
 
+XS_CHOWN=${NGINX_CHOWN:-yes}
+
 XS_DISABLE_REWRITES=${NGINX_DISABLE_REWRITES:-no}
 XS_DISABLE_PAGESPEED=${NGINX_DISABLE_PAGESPEED:-no}
 XS_DISABLE_GEOIP=${NGINX_DISABLE_GEOIP:-no}
@@ -436,6 +438,13 @@ if [ "$result" != "0" ] ; then
   echo "ERROR: CONFIG DAMAGED, sleeping ......"
   sleep 1d
   exit 1
+fi
+
+if [ "$XS_CHOWN" == "yes" ] || [ "$XS_CHOWN" == "true" ] || [ "$XS_CHOWN" == "on" ] || [ "$XS_CHOWN" == "1" ] ; then
+  echo "Setting ownership of /var/cache/nginx"
+  chown -f -R nobody:nobody /var/cache/nginx
+  echo "Setting ownership of /var/cache/pagespeed"
+  chown -f -R nobody:nobody /var/cache/pagespeed/
 fi
 
 echo "#### Nginx Starting ####"
