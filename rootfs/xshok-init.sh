@@ -440,11 +440,20 @@ if [ "$result" != "0" ] ; then
   exit 1
 fi
 
+if [ "$XS_DISABLE_PAGESPEED" != "yes" ] && [ "$XS_DISABLE_PAGESPEED" != "true" ] && [ "$XS_DISABLE_PAGESPEED" != "on" ] && [ "$XS_DISABLE_PAGESPEED" != "1" ] ; then
+  echo "Configuring pagespeed cache dir : /var/cache/pagespeed"
+  mkdir -p /var/cache/pagespeed/shm_metadata_cache
+  touch /var/cache/pagespeed/\!clean\!time\!
+  chmod -R 777 /var/cache/pagespeed
+fi
+
 if [ "$XS_CHOWN" == "yes" ] || [ "$XS_CHOWN" == "true" ] || [ "$XS_CHOWN" == "on" ] || [ "$XS_CHOWN" == "1" ] ; then
   echo "Setting ownership of /var/cache/nginx"
   chown -f -R nobody:nobody /var/cache/nginx
-  echo "Setting ownership of /var/cache/pagespeed"
-  chown -f -R nobody:nobody /var/cache/pagespeed/
+  if [ "$XS_DISABLE_PAGESPEED" != "yes" ] && [ "$XS_DISABLE_PAGESPEED" != "true" ] && [ "$XS_DISABLE_PAGESPEED" != "on" ] && [ "$XS_DISABLE_PAGESPEED" != "1" ] ; then
+    echo "Setting ownership of /var/cache/pagespeed"
+    chown -f -R nobody:nobody /var/cache/pagespeed/
+  fi
 fi
 
 echo "#### Nginx Starting ####"
