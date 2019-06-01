@@ -443,7 +443,8 @@ fi
 if [ "$XS_DISABLE_PAGESPEED" != "yes" ] && [ "$XS_DISABLE_PAGESPEED" != "true" ] && [ "$XS_DISABLE_PAGESPEED" != "on" ] && [ "$XS_DISABLE_PAGESPEED" != "1" ] ; then
   echo "Configuring pagespeed cache dir : /var/cache/pagespeed"
   mkdir -p /var/cache/pagespeed/shm_metadata_cache
-  touch /var/cache/pagespeed/\!clean\!time\!
+  mkdir -p /var/cache/pagespeed/v3
+  touch '/var/cache/pagespeed/!clean!time!'
   chmod -R 777 /var/cache/pagespeed
 fi
 

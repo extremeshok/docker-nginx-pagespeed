@@ -9,22 +9,22 @@
 ########################## www httpS (443) to non-www https (443)  ##########################
 # server {
 #   listen 443 ssl http2;
-#   server_name www.mailcow.farm;
+#   server_name www.domain.sample;
 #
-# 	ssl_certificate      /certs/test.mailcow.farm/fullchain.pem;
-#   ssl_certificate_key  /certs/test.mailcow.farm/privkey.pem;
-#   ssl_trusted_certificate   /certs/test.mailcow.farm/chain.pem;
+# 	ssl_certificate      /certs/test.domain.sample/fullchain.pem;
+#   ssl_certificate_key  /certs/test.domain.sample/privkey.pem;
+#   ssl_trusted_certificate   /certs/test.domain.sample/chain.pem;
 #
 #   include /etc/nginx/includes/ssl.conf;
 #
-#   return 302 https://mailcow.farm$request_uri;
+#   return 302 https://domain.sample$request_uri;
 # }
 
 ########################## *. httpS (443) ##########################
 server
 {
   listen 443 ssl http2;
-  server_name test.mailcow.farm www.mailcow.farm;
+  server_name test.domain.sample www.domain.sample;
 
   root /var/www/html;
   index index.htm index.html index.php;
@@ -32,19 +32,19 @@ server
   access_log /var/log/nginx/access.log;
   error_log /var/log/nginx/error.log warn;
 
-  ssl_certificate /certs/test.mailcow.farm/fullchain.pem;
-  ssl_certificate_key /certs/test.mailcow.farm/privkey.pem;
+  ssl_certificate /certs/test.domain.sample/fullchain.pem;
+  ssl_certificate_key /certs/test.domain.sample/privkey.pem;
   ## verify chain of trust of OCSP response using Root CA and Intermediate certs
-  ssl_trusted_certificate /certs/test.mailcow.farm/chain.pem;
+  ssl_trusted_certificate /certs/test.domain.sample/chain.pem;
 
   pagespeed on;
-  pagespeed Domain https://test.mailcow.farm;
+  pagespeed Domain https://test.domain.sample;
 
   pagespeed SslCertDirectory /certs/;
   pagespeed SslCertFile /certs/chain.pem;
 
-  pagespeed LoadFromFile "https://test.mailcow.farm" "/var/www/";
-  pagespeed LoadFromFile "https://mailcow.farm" "/var/www/";
+  pagespeed LoadFromFile "https://test.domain.sample" "/var/www/";
+  pagespeed LoadFromFile "https://domain.sample" "/var/www/";
 
   #add_header X-debug-message "$geoip_country_code:$cookie_AdminID";
 
@@ -75,12 +75,12 @@ server
   #
   # #	location @error_401 {
   # #    auth_basic off;
-  # #		return 302 https://test.mailcow.farm;
+  # #		return 302 https://test.domain.sample;
   # #  }
   #
   # 	location @error_404 {
   #     auth_basic off;
-  # 		return 302 https://test.mailcow.farm;
+  # 		return 302 https://test.domain.sample;
   #   }
   include /etc/nginx/include.d/*.conf;
 
