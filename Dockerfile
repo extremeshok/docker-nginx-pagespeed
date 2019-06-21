@@ -3,10 +3,6 @@ FROM nginx:mainline AS BUILD
 
 LABEL mantainer="Adrian Kriel <admin@extremeshok.com>" vendor="eXtremeSHOK.com"
 
-RUN NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2)
-
-RUN CODENAME=$(grep -Po 'VERSION="[0-9]+ \(\K[^)]+' /etc/os-release)
-
 ENV NPS_VERSION 1.13.35.2-stable
 ENV OSSL_VERSION 1.1.1
 
@@ -26,6 +22,7 @@ RUN \
   zlib1g-dev
 
 RUN  echo "**** Add Nginx Repo ****" \
+  && CODENAME=$(grep -Po 'VERSION="[0-9]+ \(\K[^)]+' /etc/os-release) \
   && wget http://nginx.org/keys/nginx_signing.key \
   && apt-key add nginx_signing.key \
   && echo "deb http://nginx.org/packages/mainline/debian/ ${CODENAME} nginx" >> /etc/apt/sources.list \
@@ -48,7 +45,7 @@ RUN echo "*** Patch Nginx for OpenSSL 1.1.1 ***" \
 
 # cd /usr/local/src/nginx/nginx-1.17.0/
 # apt build-dep nginx -y && dpkg-buildpackage -b
-#
+# NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2)
 #
 # RUN apt-get build-dep -y nginx=${NGINX_VERSION}-1
 
