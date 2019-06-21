@@ -1,6 +1,18 @@
 # docker-nginx-pagespeed
 alpine nginx pagespeed
 
+## Notes
+geoip v2
+
+## Nginx Modules
+cache-purge
+geoip2
+headers-more
+image-filter
+redis2
+upload-progress
+
+
 ## Enviroment Varibles
 
 NGINX_DISABLE_GEOIP=no
@@ -36,4 +48,7 @@ NGINX_WORDPRESS_CACHE_ENABLER=
 
 Start the Docker container:
 
-docker run -p 433:433 extremeshok/nginx-pagespeed
+docker run -ti extremeshok/nginx-pagespeed:edge /bin/bash
+
+Development / Testing
+docker run -ti extremeshok/nginx-pagespeed:edge /bin/bash

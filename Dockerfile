@@ -1,26 +1,7 @@
 #FROM pagespeed/nginx-pagespeed:latest
-FROM extremeshok/baseimage-alpine:3.10 AS BUILD
+FROM nginx:mainline AS BUILD
 
 LABEL mantainer="Adrian Kriel <admin@extremeshok.com>" vendor="eXtremeSHOK.com"
-
-RUN \
-  echo "**** install nginx ****" \
-  && apk-install nginx
-
-RUN \
-  echo "**** install bash runtime packages ****" \
-  && apk-install \
-    bash \
-    coreutils \
-    curl \
-    openssl \
-    rsync \
-    tzdata
-
-
-#
-# Install packages
-RUN apk --no-cache add curl bash ca-certificates
 
 RUN echo "**** configure ****"
 RUN mkdir -p /var/cache/pagespeed \
