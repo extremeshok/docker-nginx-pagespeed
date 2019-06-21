@@ -8,18 +8,24 @@ ENV OSSL_VERSION 1.1.1
 
 RUN echo "**** install packages ****" \
   && apt-get update && apt-get install -y \
+  autoconf \
+  automake \
   build-essential \
+  ca-certificates \
+  curl \
   dpkg-dev \
   git \
   libcurl4-openssl-dev \
   libjansson-dev \
   libpcre3 \
   libpcre3-dev \
+  libssl-dev \
+  libtool \
+  tar \
   unzip \
   uuid-dev \
   wget \
   zlib1g-dev
-
 
 RUN  echo "**** Add Nginx Repo ****" \
   && CODENAME=$(grep -Po 'VERSION="[0-9]+ \(\K[^)]+' /etc/os-release) \
@@ -39,23 +45,115 @@ RUN echo "**** Add OpenSSL 1.1.1 ****" \
   && cd openssl \
   && git checkout OpenSSL_1_1_1-stable
 
+RUN echo "*** Add libbrotli ****" \
+  && cd /usr/local/src \
+  && git clone https://github.com/bagder/libbrotli.git \
+  && cd libbrotli \
+  && ./autogen.sh \
+  && ./configure \
+  && make -j $(nproc) \
+  && make install \
+  && ldconfig
+
 RUN echo "**** Add Brotli ****" \
   && cd /usr/local/src \
   && git clone --recursive https://github.com/yverry/ngx_brotli.git
 
+RUN echo "**** Add More Headers ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/openresty/headers-more-nginx-module.git
+
+RUN echo "**** Add Upload Progress ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/masterzen/nginx-upload-progress-module.git
+
+RUN echo "**** Add Cache Purge ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/nginx-modules/ngx_cache_purge.git
+
+RUN echo "*** Add libmaxminddb ****" \
+  && cd /usr/local/src \
+  && git clone https://github.com/maxmind/libmaxminddb.git \
+  && cd libmaxminddb \
+  && ./configure \
+  && make -j $(nproc) \
+  && make install \
+  && ldconfig
+
+RUN echo "**** Add Geoip2 ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/leev/ngx_http_geoip2_module.git
+
+
+
+## PAGESPEED
+  # cd /usr/local/src
+  # # Cleaning up in case of update
+  # rm -r ngx_pagespeed-${NPS_VER}-beta 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
+  # # Download and extract of PageSpeed module
+  # echo -ne "       Downloading ngx_pagespeed      [..]\r"
+  # wget https://github.com/pagespeed/ngx_pagespeed/archive/v${NPS_VER}-beta.zip 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
+  # unzip v${NPS_VER}-beta.zip 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
+  # rm v${NPS_VER}-beta.zip
+  # cd ngx_pagespeed-${NPS_VER}-beta
+  # psol_url=https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
+  # [ -e scripts/format_binary_url.sh ] && psol_url=$(scripts/format_binary_url.sh PSOL_BINARY_URL)
+  # wget ${psol_url} 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
+  # tar -xzvf $(basename ${psol_url}) 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
+  # rm $(basename ${psol_url})
+
+#--add-module=/usr/local/src/
+#
+
 RUN echo "*** Patch Nginx for OpenSSL and Brotli ***" \
   && NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2) \
-  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --with-openssl=/usr/local/src/openssl --add-module=/usr/local/src/ngx_brotli|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --with-openssl=/usr/local/src/openssl --add-module=/usr/local/src/ngx_brotli --add-module=/usr/local/src/headers-more-nginx-module --add-module=/usr/local/src/nginx-upload-progress-module --add-module=/usr/local/src/ngx_cache_purge --add-module=/usr/local/src/ngx_http_geoip2_module|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules \
   && sed -i 's|dh_shlibdeps -a|dh_shlibdeps -a --dpkg-shlibdeps-params=--ignore-missing-info|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules \
   && sed -i 's|CFLAGS="$CFLAGS -Werror"|#CFLAGS="$CFLAGS -Werror"|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/auto/cc/gcc
 
-RUN echo "*** Build Nginx ***" \
-  && NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2) \
-  && cd /usr/local/src/nginx/nginx-${NGINX_VERSION}/ \
-  && apt build-dep nginx -y  \
-  && dpkg-buildpackage -b \
-  && cd /usr/local/src/nginx \
-  && dpkg -i nginx*.deb
+  # NGINX_OPTIONS="
+  # --prefix=/etc/nginx \
+  # --sbin-path=/usr/sbin/nginx \
+  # --conf-path=/etc/nginx/nginx.conf \
+  # --error-log-path=/var/log/nginx/error.log \
+  # --http-log-path=/var/log/nginx/access.log \
+  # --pid-path=/var/run/nginx.pid \
+  # --lock-path=/var/run/nginx.lock \
+  # --http-client-body-temp-path=/var/cache/nginx/client_temp \
+  # --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
+  # --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
+  # --user=nginx \
+  # --group=nginx \
+  # --with-cc-opt=-Wno-deprecated-declarations"
+  #
+  #
+  # NGINX_MODULES="--without-http_ssi_module \
+  # --without-http_scgi_module \
+  # --without-http_uwsgi_module \
+  # --without-http_geo_module \
+  # --without-http_split_clients_module \
+  # --without-http_memcached_module \
+  # --without-http_empty_gif_module \
+  # --without-http_browser_module \
+  # --with-threads \
+  # --with-file-aio \
+  # --with-http_ssl_module \
+  # --with-http_v2_module \
+  # --with-http_mp4_module \
+  # --with-http_auth_request_module \
+  # --with-http_slice_module \
+  # --with-http_stub_status_module \
+  # --with-http_realip_module"
+
+
+
+# RUN echo "*** Build Nginx ***" \
+#   && NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2) \
+#   && cd /usr/local/src/nginx/nginx-${NGINX_VERSION}/ \
+#   && apt build-dep nginx -y  \
+#   && dpkg-buildpackage -b \
+#   && cd /usr/local/src/nginx \
+#   && dpkg -i nginx*.deb
 
 # cd /usr/local/src/nginx/nginx-1.17.0/
 # apt build-dep nginx -y && dpkg-buildpackage -b
