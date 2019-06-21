@@ -3,9 +3,9 @@ FROM nginx:mainline AS BUILD
 
 LABEL mantainer="Adrian Kriel <admin@extremeshok.com>" vendor="eXtremeSHOK.com"
 
+RUN NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2)
 
-ENV NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2)
-ENV CODENAME=$(grep -Po 'VERSION="[0-9]+ \(\K[^)]+' /etc/os-release)
+RUN CODENAME=$(grep -Po 'VERSION="[0-9]+ \(\K[^)]+' /etc/os-release)
 
 ENV NPS_VERSION 1.13.35.2-stable
 ENV OSSL_VERSION 1.1.1
