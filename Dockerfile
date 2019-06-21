@@ -6,8 +6,7 @@ LABEL mantainer="Adrian Kriel <admin@extremeshok.com>" vendor="eXtremeSHOK.com"
 ENV NPS_VERSION 1.13.35.2-stable
 ENV OSSL_VERSION 1.1.1
 
-RUN \
-  echo "**** install packages ****" \
+RUN echo "**** install packages ****" \
   && apt-get update && apt-get install -y \
   build-essential \
   dpkg-dev \
@@ -41,7 +40,8 @@ RUN echo "**** Add OpenSSL 1.1.1 ****" \
 RUN echo "*** Patch Nginx for OpenSSL 1.1.1 ***" \
   && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --with-openssl=/usr/local/src/openssl|g' /usr/local/src/nginx/nginx-1.17.0/debian/rules \
   && sed -i 's|dh_shlibdeps -a|dh_shlibdeps -a --dpkg-shlibdeps-params=--ignore-missing-info|g' /usr/local/src/nginx/nginx-1.17.0/debian/rules \
-  && sed -i 's|CFLAGS="$CFLAGS -Werror"|#CFLAGS="$CFLAGS -Werror"|g' /usr/local/src/nginx/nginx-1.17.0/auto/cc/gcc \
+  && sed -i 's|CFLAGS="$CFLAGS -Werror"|#CFLAGS="$CFLAGS -Werror"|g' /usr/local/src/nginx/nginx-1.17.0/auto/cc/gcc
+  
 
 # cd /usr/local/src/nginx/nginx-1.17.0/
 # apt build-dep nginx -y && dpkg-buildpackage -b
