@@ -20,6 +20,7 @@ RUN echo "**** install packages ****" \
   wget \
   zlib1g-dev
 
+
 RUN  echo "**** Add Nginx Repo ****" \
   && CODENAME=$(grep -Po 'VERSION="[0-9]+ \(\K[^)]+' /etc/os-release) \
   && wget http://nginx.org/keys/nginx_signing.key \
@@ -28,20 +29,33 @@ RUN  echo "**** Add Nginx Repo ****" \
   && echo "deb-src http://nginx.org/packages/mainline/debian/ ${CODENAME} nginx" >> /etc/apt/sources.list \
   && apt-get update
 
+RUN echo "**** Prepare Nginx ****" \
+  && mkdir -p /usr/local/src/nginx && cd /usr/local/src/nginx/ \
+  && apt source nginx
 
 RUN echo "**** Add OpenSSL 1.1.1 ****" \
-  && mkdir -p /usr/local/src/nginx && cd /usr/local/src/nginx/ \
-  && apt source nginx \
   && cd /usr/local/src \
   && git clone https://github.com/openssl/openssl.git \
   && cd openssl \
   && git checkout OpenSSL_1_1_1-stable
 
-RUN echo "*** Patch Nginx for OpenSSL 1.1.1 ***" \
-  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --with-openssl=/usr/local/src/openssl|g' /usr/local/src/nginx/nginx-1.17.0/debian/rules \
-  && sed -i 's|dh_shlibdeps -a|dh_shlibdeps -a --dpkg-shlibdeps-params=--ignore-missing-info|g' /usr/local/src/nginx/nginx-1.17.0/debian/rules \
-  && sed -i 's|CFLAGS="$CFLAGS -Werror"|#CFLAGS="$CFLAGS -Werror"|g' /usr/local/src/nginx/nginx-1.17.0/auto/cc/gcc
-  
+RUN echo "**** Add Brotli ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/yverry/ngx_brotli.git
+
+RUN echo "*** Patch Nginx for OpenSSL and Brotli ***" \
+  && NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2) \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --with-openssl=/usr/local/src/openssl --add-module=/usr/local/src/ngx_brotli|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules \
+  && sed -i 's|dh_shlibdeps -a|dh_shlibdeps -a --dpkg-shlibdeps-params=--ignore-missing-info|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules \
+  && sed -i 's|CFLAGS="$CFLAGS -Werror"|#CFLAGS="$CFLAGS -Werror"|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/auto/cc/gcc
+
+RUN echo "*** Build Nginx ***" \
+  && NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2) \
+  && cd /usr/local/src/nginx/nginx-${NGINX_VERSION}/ \
+  && apt build-dep nginx -y  \
+  && dpkg-buildpackage -b \
+  && cd /usr/local/src/nginx \
+  && dpkg -i nginx*.deb
 
 # cd /usr/local/src/nginx/nginx-1.17.0/
 # apt build-dep nginx -y && dpkg-buildpackage -b
