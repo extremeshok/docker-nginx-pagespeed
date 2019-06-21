@@ -1,5 +1,5 @@
 #FROM pagespeed/nginx-pagespeed:latest
-FROM baseimage-alpine:3.10 AS BUILD
+FROM extremeshok/baseimage-alpine:3.10 AS BUILD
 
 LABEL mantainer="Adrian Kriel <admin@extremeshok.com>" vendor="eXtremeSHOK.com"
 
