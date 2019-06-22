@@ -26,6 +26,7 @@ RUN echo "**** install packages ****" \
   libssl-dev \
   libtool \
   libwebp-dev \
+  libxml2-dev \
   libxslt1-dev \
   python-pip \
   tar \
@@ -33,6 +34,7 @@ RUN echo "**** install packages ****" \
   uuid-dev \
   wget \
   zlib1g-dev
+
 
 RUN  echo "**** Add Nginx Repo ****" \
   && CODENAME=$(grep -Po 'VERSION="[0-9]+ \(\K[^)]+' /etc/os-release) \
@@ -108,6 +110,46 @@ RUN echo "**** Add Geoip2 ****" \
   && git clone --recursive https://github.com/leev/ngx_http_geoip2_module.git \
   && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/ngx_http_geoip2_module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
+RUN echo "**** Add Redis2 ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/openresty/redis2-nginx-module.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/redis2-nginx-module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+
+RUN echo "**** Add Webdav ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/arut/nginx-dav-ext-module.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --with-http_dav_module --add-module=/usr/local/src/nginx-dav-ext-module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+
+RUN echo "**** Memc ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/openresty/memc-nginx-module.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/memc-nginx-module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+
+RUN echo "**** Srcache ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/openresty/srcache-nginx-module.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/srcache-nginx-module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+
+RUN echo "**** http upstream check ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/yaoweibin/nginx_upstream_check_module.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/nginx_http_upstream_check_module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+
+RUN echo "**** echo ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/openresty/echo-nginx-module.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/echo-nginx-module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+
+RUN echo "**** sticky ng ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/nginx-sticky-module-ng |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+
+RUN echo "**** http concat ****" \
+  && cd /usr/local/src \
+  && git clone --recursive https://github.com/alibaba/nginx-http-concat.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/nginx-http-concat |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+
 RUN echo "**** Add pagespeed ****" \
   && pip install lastversion \
   && THISVERSION="$(lastversion apache/incubator-pagespeed-ngx)" \
@@ -138,13 +180,10 @@ RUN echo "**** configure ****"
 RUN mkdir -p /var/cache/pagespeed \
 && mkdir -p /var/cache/nginx
 
-
 RUN echo "**** install runtime packages ****" \
   && apt-get update && apt-get install -y netcat
 
 COPY rootfs/ /
-#ADD rootfs/ /
-
 
 RUN chmod 777 /xshok-init.sh
 

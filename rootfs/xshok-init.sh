@@ -66,6 +66,12 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
     fi
   fi
 
+  if [ "$XS_DISABLE_GEOIP" != "yes" ] && [ "$XS_DISABLE_GEOIP" != "true" ] && [ "$XS_DISABLE_GEOIP" != "on" ] && [ "$XS_DISABLE_GEOIP" != "1" ] ; then
+    if [ -f "/usr/share/GeoIP/GeoIP.dat" ] ; then
+      echo "GeoIPv1 database detected, disabling GeoIP. This server requires GeoIPv2 databases, please remove /usr/share/GeoIP/GeoIP.dat ..."
+      XS_DISABLE_GEOIP="yes"
+    fi
+  fi
   if [ "$XS_DISABLE_GEOIP" == "yes" ] || [ "$XS_DISABLE_GEOIP" == "true" ] || [ "$XS_DISABLE_GEOIP" == "on" ] || [ "$XS_DISABLE_GEOIP" == "1" ] ; then
     echo "GEOIP Disabled"
     mv -f /etc/nginx/modules/http_geoip2.conf /etc/nginx/modules/http_geoip2.disabled
@@ -453,11 +459,12 @@ fi
 
 if [ "$XS_CHOWN" == "yes" ] || [ "$XS_CHOWN" == "true" ] || [ "$XS_CHOWN" == "on" ] || [ "$XS_CHOWN" == "1" ] ; then
   echo "Setting ownership of /var/cache/nginx"
-  chown -f -R nobody:nobody /var/cache/nginx
+  chown -f -R nginx:nginx /var/cache/nginx
   if [ "$XS_DISABLE_PAGESPEED" != "yes" ] && [ "$XS_DISABLE_PAGESPEED" != "true" ] && [ "$XS_DISABLE_PAGESPEED" != "on" ] && [ "$XS_DISABLE_PAGESPEED" != "1" ] ; then
     echo "Setting ownership of /var/cache/pagespeed"
-    chown -f -R nobody:nobody /var/cache/pagespeed/
+    chown -f -R nginx:nginx /var/cache/pagespeed
   fi
+  chmod -R 777 /var/cache
 fi
 
 echo "#### Nginx Starting ####"

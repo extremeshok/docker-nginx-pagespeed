@@ -8,12 +8,19 @@ http_xslt_module
 ## Nginx Modules
 brotli
 cache-purge
+Dav Ext
+echo
 geoip2
 headers-more
-upload-progress
-pagespeed
+http upstream check
+http concat
+Memc
 Nginx Development Kit
+pagespeed
+Redis2
 set-misc
+Srcache
+upload-progress
 
 ## Enviroment Varibles
 
@@ -50,7 +57,7 @@ NGINX_WORDPRESS_CACHE_ENABLER=
 
 Start the Docker container:
 
-docker run -d -p 433:433 extremeshok/nginx-pagespeed:edge /bin/bash
+docker run -rm -ti 433:433 php/7.3-fpm-stretch /bin/bash
 
 Development / Testing
 docker pull extremeshok/nginx-pagespeed:edge && docker run --rm -ti extremeshok/nginx-pagespeed:edge /bin/bash
