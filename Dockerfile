@@ -139,6 +139,9 @@ RUN mkdir -p /var/cache/pagespeed \
 && mkdir -p /var/cache/nginx
 COPY rootfs/ /
 
+RUN echo "**** install runtime packages ****" \
+  && apt-get update && apt-get install -y netcat
+
 RUN chmod 777 /xshok-init.sh
 
 WORKDIR /var/www/html
