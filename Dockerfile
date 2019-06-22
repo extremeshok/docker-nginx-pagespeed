@@ -41,9 +41,10 @@ RUN echo "**** Prepare Nginx ****" \
 
 RUN echo "**** Add OpenSSL 1.1.1 ****" \
   && cd /usr/local/src \
-  && git clone https://github.com/openssl/openssl.git \
+  && git clone --recursive https://github.com/openssl/openssl.git \
   && cd openssl \
-  && git checkout OpenSSL_1_1_1-stable
+  && git checkout OpenSSL_1_1_1-stable \
+  sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --with-openssl=/usr/local/src/openssl|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
 RUN echo "*** Add libbrotli ****" \
   && cd /usr/local/src \
@@ -57,24 +58,29 @@ RUN echo "*** Add libbrotli ****" \
 
 RUN echo "**** Add Brotli ****" \
   && cd /usr/local/src \
-  && git clone --recursive https://github.com/yverry/ngx_brotli.git
+  && git clone --recursive https://github.com/yverry/ngx_brotli.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/ngx_brotli|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
 RUN echo "**** Add More Headers ****" \
   && cd /usr/local/src \
-  && git clone --recursive https://github.com/openresty/headers-more-nginx-module.git
+  && git clone --recursive https://github.com/openresty/headers-more-nginx-module.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/headers-more-nginx-module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
 RUN echo "**** Add Upload Progress ****" \
   && cd /usr/local/src \
-  && git clone --recursive https://github.com/masterzen/nginx-upload-progress-module.git
+  && git clone --recursive https://github.com/masterzen/nginx-upload-progress-module.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/nginx-upload-progress-module|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
 RUN echo "**** Add Cache Purge ****" \
   && cd /usr/local/src \
-  && git clone --recursive https://github.com/nginx-modules/ngx_cache_purge.git
+  && git clone --recursive https://github.com/nginx-modules/ngx_cache_purge.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/ngx_cache_purge|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
 RUN echo "*** Add libmaxminddb ****" \
   && cd /usr/local/src \
-  && git clone https://github.com/maxmind/libmaxminddb.git \
+  && git clone --recursive https://github.com/maxmind/libmaxminddb.git \
   && cd libmaxminddb \
+  && ./bootstrap \
   && ./configure \
   && make -j $(nproc) \
   && make install \
@@ -82,9 +88,8 @@ RUN echo "*** Add libmaxminddb ****" \
 
 RUN echo "**** Add Geoip2 ****" \
   && cd /usr/local/src \
-  && git clone --recursive https://github.com/leev/ngx_http_geoip2_module.git
-
-
+  && git clone --recursive https://github.com/leev/ngx_http_geoip2_module.git \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)"--add-module=/usr/local/src/ngx_http_geoip2_module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
 ## PAGESPEED
   # cd /usr/local/src
@@ -102,14 +107,13 @@ RUN echo "**** Add Geoip2 ****" \
   # tar -xzvf $(basename ${psol_url}) 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
   # rm $(basename ${psol_url})
 
-#--add-module=/usr/local/src/
-#
+#  sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
-RUN echo "*** Patch Nginx for OpenSSL and Brotli ***" \
+#
+RUN echo "*** Patch Nginx Additional Modules ***" \
   && NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2) \
-  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --with-openssl=/usr/local/src/openssl --add-module=/usr/local/src/ngx_brotli --add-module=/usr/local/src/headers-more-nginx-module --add-module=/usr/local/src/nginx-upload-progress-module --add-module=/usr/local/src/ngx_cache_purge --add-module=/usr/local/src/ngx_http_geoip2_module|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules \
-  && sed -i 's|dh_shlibdeps -a|dh_shlibdeps -a --dpkg-shlibdeps-params=--ignore-missing-info|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules \
   && sed -i 's|CFLAGS="$CFLAGS -Werror"|#CFLAGS="$CFLAGS -Werror"|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/auto/cc/gcc
+  && sed -i 's|dh_shlibdeps -a|dh_shlibdeps -a --dpkg-shlibdeps-params=--ignore-missing-info|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
   # NGINX_OPTIONS="
   # --prefix=/etc/nginx \
@@ -145,8 +149,6 @@ RUN echo "*** Patch Nginx for OpenSSL and Brotli ***" \
   # --with-http_stub_status_module \
   # --with-http_realip_module"
 
-
-
 # RUN echo "*** Build Nginx ***" \
 #   && NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2) \
 #   && cd /usr/local/src/nginx/nginx-${NGINX_VERSION}/ \
@@ -154,13 +156,6 @@ RUN echo "*** Patch Nginx for OpenSSL and Brotli ***" \
 #   && dpkg-buildpackage -b \
 #   && cd /usr/local/src/nginx \
 #   && dpkg -i nginx*.deb
-
-# cd /usr/local/src/nginx/nginx-1.17.0/
-# apt build-dep nginx -y && dpkg-buildpackage -b
-# NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2)
-#
-# RUN apt-get build-dep -y nginx=${NGINX_VERSION}-1
-
 
 RUN echo "**** configure ****"
 RUN mkdir -p /var/cache/pagespeed \
