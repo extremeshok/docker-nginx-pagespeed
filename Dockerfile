@@ -21,6 +21,7 @@ RUN echo "**** install packages ****" \
   libpcre3-dev \
   libssl-dev \
   libtool \
+  python-pip \
   tar \
   unzip \
   uuid-dev \
@@ -64,7 +65,7 @@ RUN echo "**** Add Brotli ****" \
 RUN echo "**** Add More Headers ****" \
   && cd /usr/local/src \
   && git clone --recursive https://github.com/openresty/headers-more-nginx-module.git \
-  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/headers-more-nginx-module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/headers-more-nginx-module|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
 RUN echo "**** Add Upload Progress ****" \
   && cd /usr/local/src \
@@ -89,27 +90,23 @@ RUN echo "*** Add libmaxminddb ****" \
 RUN echo "**** Add Geoip2 ****" \
   && cd /usr/local/src \
   && git clone --recursive https://github.com/leev/ngx_http_geoip2_module.git \
-  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)"--add-module=/usr/local/src/ngx_http_geoip2_module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/ngx_http_geoip2_module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
-## PAGESPEED
-  # cd /usr/local/src
-  # # Cleaning up in case of update
-  # rm -r ngx_pagespeed-${NPS_VER}-beta 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
-  # # Download and extract of PageSpeed module
-  # echo -ne "       Downloading ngx_pagespeed      [..]\r"
-  # wget https://github.com/pagespeed/ngx_pagespeed/archive/v${NPS_VER}-beta.zip 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
-  # unzip v${NPS_VER}-beta.zip 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
-  # rm v${NPS_VER}-beta.zip
-  # cd ngx_pagespeed-${NPS_VER}-beta
-  # psol_url=https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
-  # [ -e scripts/format_binary_url.sh ] && psol_url=$(scripts/format_binary_url.sh PSOL_BINARY_URL)
-  # wget ${psol_url} 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
-  # tar -xzvf $(basename ${psol_url}) 2>> /tmp/nginx-autoinstall-error.log 1>> /tmp/nginx-autoinstall-output.log
-  # rm $(basename ${psol_url})
+RUN echo "**** Add pagespeed ****" \
+  && pip install lastversion \
+  && THISVERSION="$(lastversion apache/incubator-pagespeed-ngx)" \
+  && curl --silent -o /tmp/ngx-pagespeed.tar.gz -L "https://github.com/apache/incubator-pagespeed-mod/archive/v${THISVERSION}.tar.gz" \
+  && mkdir -p /usr/local/src/ngx-pagespeed \
+  && tar xfz /tmp/ngx-pagespeed.tar.gz -C /usr/local/src/ngx-pagespeed \
+  && rm -f /tmp/ngx-pagespeed.tar.gz \
+  && mv -f /usr/local/src/ngx-pagespeed/*/* /usr/local/src/ngx-pagespeed \
+  && curl --silent -o /tmp/psol.tar.gz -L "https://dl.google.com/dl/page-speed/psol/${THISVERSION}-x64.tar.gz" \
+  && tar xfz /tmp/psol.tar.gz -C /usr/local/src/ngx-pagespeed \
+  && rm -f /tmp/psol.tar.gz \
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/ngx-pagespeed |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
 #  sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
-#
 RUN echo "*** Patch Nginx Additional Modules ***" \
   && NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2) \
   && sed -i 's|CFLAGS="$CFLAGS -Werror"|#CFLAGS="$CFLAGS -Werror"|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/auto/cc/gcc \
