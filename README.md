@@ -2,9 +2,8 @@
 alpine nginx pagespeed
 
 ## Work in progress
-image-filter
-pagespeed
-
+http_image_filter_module
+http_xslt_module
 
 ## Nginx Modules
 brotli
@@ -12,7 +11,9 @@ cache-purge
 geoip2
 headers-more
 upload-progress
-
+pagespeed
+Nginx Development Kit
+set-misc
 
 ## Enviroment Varibles
 
