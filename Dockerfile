@@ -111,7 +111,7 @@ RUN echo "**** Add Geoip2 ****" \
 RUN echo "**** Add pagespeed ****" \
   && pip install lastversion \
   && THISVERSION="$(lastversion apache/incubator-pagespeed-ngx)" \
-  && curl --silent -o /tmp/ngx-pagespeed.tar.gz -L "https://github.com/apache/incubator-pagespeed-mod/archive/v${THISVERSION}.tar.gz" \
+  && curl --silent -o /tmp/ngx-pagespeed.tar.gz -L "https://github.com/apache/incubator-pagespeed-ngx/archive/v${THISVERSION}.tar.gz" \
   && mkdir -p /usr/local/src/ngx-pagespeed \
   && tar xfz /tmp/ngx-pagespeed.tar.gz -C /usr/local/src/ngx-pagespeed \
   && rm -f /tmp/ngx-pagespeed.tar.gz \
@@ -126,13 +126,13 @@ RUN echo "*** Patch Nginx Build Config ***" \
   && sed -i 's|CFLAGS="$CFLAGS -Werror"|#CFLAGS="$CFLAGS -Werror"|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/auto/cc/gcc \
   && sed -i 's|dh_shlibdeps -a|dh_shlibdeps -a --dpkg-shlibdeps-params=--ignore-missing-info|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
-# RUN echo "*** Build Nginx ***" \
-#   && NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2) \
-#   && cd /usr/local/src/nginx/nginx-${NGINX_VERSION}/ \
-#   && apt build-dep nginx -y  \
-#   && dpkg-buildpackage -b \
-#   && cd /usr/local/src/nginx \
-#   && dpkg -i nginx*.deb
+RUN echo "*** Build Nginx ***" \
+  && NGINX_VERSION=$(nginx -v 2>&1 | nginx -v 2>&1 | cut -d'/' -f2) \
+  && cd /usr/local/src/nginx/nginx-${NGINX_VERSION}/ \
+  && apt build-dep nginx -y  \
+  && dpkg-buildpackage -b \
+  && cd /usr/local/src/nginx \
+  && dpkg -i nginx*.deb
 
 RUN echo "**** configure ****"
 RUN mkdir -p /var/cache/pagespeed \
@@ -148,9 +148,9 @@ EXPOSE 443
 #CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
 # Configure a healthcheck to validate that everything is working, check if response header returns 200 code OR die
-#HEALTHCHECK --interval=5s --timeout=5s CMD [ "200" = "$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/)" ] || exit 1
+HEALTHCHECK --interval=5s --timeout=5s CMD [ "200" = "$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/)" ] || exit 1
 
 STOPSIGNAL SIGTERM
 
-#CMD ["/xshok-init.sh"]
-CMD ["/bin/sleep","10000000"]
+CMD ["/xshok-init.sh"]
+#CMD ["/bin/sleep","10000000"]
