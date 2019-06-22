@@ -67,13 +67,6 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
   fi
 
   if [ "$XS_DISABLE_GEOIP" == "yes" ] || [ "$XS_DISABLE_GEOIP" == "true" ] || [ "$XS_DISABLE_GEOIP" == "on" ] || [ "$XS_DISABLE_GEOIP" == "1" ] ; then
-    if [ ! -f "/usr/share/GeoIP/GeoLite2-Country.mmdb" ] || [ ! -f "/usr/share/GeoIP/GeoLite2-City.mmdb" ] ; then
-      echo "Could Not Find: /usr/share/GeoIP/GeoLite2-Country.mmdb or /usr/share/GeoIP/GeoLite2-City.mmdb"
-      XS_DISABLE_GEOIP="yes"
-    fi
-  fi
-
-  if [ "$XS_DISABLE_GEOIP" == "yes" ] || [ "$XS_DISABLE_GEOIP" == "true" ] || [ "$XS_DISABLE_GEOIP" == "on" ] || [ "$XS_DISABLE_GEOIP" == "1" ] ; then
     echo "GEOIP Disabled"
     mv -f /etc/nginx/modules/http_geoip2.conf /etc/nginx/modules/http_geoip2.disabled
     mv -f /etc/nginx/conf.d/geoip2.conf /etc/nginx/conf.d/geoip2.disabled
@@ -431,8 +424,12 @@ if [ "$XS_DISABLE_PHP" != "yes" ] && [ "$XS_DISABLE_PHP" != "true" ] && [ "$XS_D
   done
 fi
 if [ "$XS_DISABLE_GEOIP" != "yes" ] && [ "$XS_DISABLE_GEOIP" != "true" ] && [ "$XS_DISABLE_GEOIP" != "on" ] && [ "$XS_DISABLE_GEOIP" != "1" ] ; then
-  while ! [ -f "/usr/share/GeoIP/GeoIP.dat" ] ; do
-    echo "Waiting for /usr/share/GeoIP/GeoIP.dat ..."
+  while ! [ -f "/usr/share/GeoIP/GeoLite2-Country.mmdb" ] ; do
+    echo "Waiting for /usr/share/GeoIP/GeoLite2-Country.mmdb ..."
+    sleep 2
+  done
+  while ! [ -f "/usr/share/GeoIP/GeoLite2-City.mmdb" ] ; do
+    echo "Waiting for /usr/share/GeoIP/GeoLite2-City.mmdb ..."
     sleep 2
   done
 fi
