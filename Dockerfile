@@ -44,7 +44,7 @@ RUN echo "**** Add OpenSSL 1.1.1 ****" \
   && git clone --recursive https://github.com/openssl/openssl.git \
   && cd openssl \
   && git checkout OpenSSL_1_1_1-stable \
-  sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --with-openssl=/usr/local/src/openssl|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
+  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --with-openssl=/usr/local/src/openssl|g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
 RUN echo "*** Add libbrotli ****" \
   && cd /usr/local/src \
