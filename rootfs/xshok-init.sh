@@ -67,15 +67,22 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
   fi
 
   if [ "$XS_DISABLE_GEOIP" == "yes" ] || [ "$XS_DISABLE_GEOIP" == "true" ] || [ "$XS_DISABLE_GEOIP" == "on" ] || [ "$XS_DISABLE_GEOIP" == "1" ] ; then
-    echo "GEOIP Disabled"
-    mv -f /etc/nginx/modules/http_geoip.conf /etc/nginx/modules/http_geoip.disabled
-    mv -f /etc/nginx/conf.d/geoip.conf /etc/nginx/conf.d/geoip.disabled
-  else
-    if [ -f "/etc/nginx/modules/http_geoip.disabled" ] ; then
-      mv -f /etc/nginx/modules/http_geoip.disabled /etc/nginx/modules/http_geoip.conf
+    if [ ! -f "/usr/share/GeoIP/GeoLite2-Country.mmdb" ] || [ ! -f "/usr/share/GeoIP/GeoLite2-City.mmdb" ] ; then
+      echo "Could Not Find: /usr/share/GeoIP/GeoLite2-Country.mmdb or /usr/share/GeoIP/GeoLite2-City.mmdb"
+      XS_DISABLE_GEOIP="yes"
     fi
-    if [ -f "/etc/nginx/conf.d/geoip.disabled" ] ; then
-      mv -f /etc/nginx/conf.d/geoip.disabled /etc/nginx/conf.d/geoip.conf
+  fi
+
+  if [ "$XS_DISABLE_GEOIP" == "yes" ] || [ "$XS_DISABLE_GEOIP" == "true" ] || [ "$XS_DISABLE_GEOIP" == "on" ] || [ "$XS_DISABLE_GEOIP" == "1" ] ; then
+    echo "GEOIP Disabled"
+    mv -f /etc/nginx/modules/http_geoip2.conf /etc/nginx/modules/http_geoip2.disabled
+    mv -f /etc/nginx/conf.d/geoip2.conf /etc/nginx/conf.d/geoip2.disabled
+  else
+    if [ -f "/etc/nginx/modules/http_geoip2.disabled" ] ; then
+      mv -f /etc/nginx/modules/http_geoip2.disabled /etc/nginx/modules/http_geoip2.conf
+    fi
+    if [ -f "/etc/nginx/conf.d/geoip2.disabled" ] ; then
+      mv -f /etc/nginx/conf.d/geoip2.disabled /etc/nginx/conf.d/geoip2.conf
     fi
   fi
   if [ "$XS_DISABLE_PAGESPEED" == "yes" ] || [ "$XS_DISABLE_PAGESPEED" == "true" ] || [ "$XS_DISABLE_PAGESPEED" == "on" ] || [ "$XS_DISABLE_PAGESPEED" == "1" ] ; then
