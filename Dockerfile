@@ -111,7 +111,7 @@ RUN echo "**** Add Geoip2 ****" \
 RUN echo "**** Add pagespeed ****" \
   && pip install lastversion \
   && THISVERSION="$(lastversion apache/incubator-pagespeed-ngx)" \
-  && curl --silent -o /tmp/ngx-pagespeed.tar.gz -L "https://github.com/apache/incubator-pagespeed-ngx/archive/v${THISVERSION}.tar.gz" \
+  && curl --silent -o /tmp/ngx-pagespeed.tar.gz -L "https://github.com/apache/incubator-pagespeed-ngx/archive/v${THISVERSION}-stable.tar.gz" \
   && mkdir -p /usr/local/src/ngx-pagespeed \
   && tar xfz /tmp/ngx-pagespeed.tar.gz -C /usr/local/src/ngx-pagespeed \
   && rm -f /tmp/ngx-pagespeed.tar.gz \
