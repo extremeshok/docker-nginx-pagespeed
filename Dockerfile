@@ -142,8 +142,8 @@ RUN mkdir -p /var/cache/pagespeed \
 RUN echo "**** install runtime packages ****" \
   && apt-get update && apt-get install -y netcat
 
-#COPY rootfs/ /
-ADD rootfs/ /
+COPY rootfs/ /
+#ADD rootfs/ /
 
 
 RUN chmod 777 /xshok-init.sh
