@@ -208,7 +208,6 @@ for myhostnames in ${XS_DOMAINS//\;/ } ; do
     exit 1
   fi
 
-
   echo "#### Nginx Generating Configs ####"
   if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/nginx/include.d/" ] && [ -w "/etc/nginx/server.d/" ] ; then
     echo "#### Generating Nginx Domain config for ${primary_hostname} ####"

@@ -137,10 +137,14 @@ RUN echo "*** Build Nginx ***" \
 RUN echo "**** configure ****"
 RUN mkdir -p /var/cache/pagespeed \
 && mkdir -p /var/cache/nginx
-COPY rootfs/ /
+
 
 RUN echo "**** install runtime packages ****" \
   && apt-get update && apt-get install -y netcat
+
+#COPY rootfs/ /
+ADD rootfs/ /
+
 
 RUN chmod 777 /xshok-init.sh
 
