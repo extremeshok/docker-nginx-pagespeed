@@ -130,20 +130,10 @@ RUN echo "**** Srcache ****" \
   && git clone --recursive https://github.com/openresty/srcache-nginx-module.git \
   && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/srcache-nginx-module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
-# RUN echo "**** http upstream check ****" \
-#   && cd /usr/local/src \
-#   && git clone --recursive https://github.com/yaoweibin/nginx_upstream_check_module.git \
-#   && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/nginx_http_upstream_check_module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
-
 RUN echo "**** echo ****" \
   && cd /usr/local/src \
   && git clone --recursive https://github.com/openresty/echo-nginx-module.git \
   && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/echo-nginx-module |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
-
-RUN echo "**** sticky ng ****" \
-  && cd /usr/local/src \
-  && git clone --recursive https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng.git \
-  && sed -i 's|--with-ld-opt="$(LDFLAGS)"|--with-ld-opt="$(LDFLAGS)" --add-module=/usr/local/src/nginx-sticky-module-ng |g' /usr/local/src/nginx/nginx-${NGINX_VERSION}/debian/rules
 
 RUN echo "**** http concat ****" \
   && cd /usr/local/src \

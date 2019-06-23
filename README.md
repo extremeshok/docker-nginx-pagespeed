@@ -12,7 +12,6 @@ Dav Ext
 echo
 geoip2
 headers-more
-http upstream check
 http concat
 Memc
 Nginx Development Kit
