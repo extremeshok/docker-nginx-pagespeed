@@ -6,20 +6,7 @@ http_image_filter_module
 http_xslt_module
 
 ## Nginx Modules
-brotli
-cache-purge
-Dav Ext
-echo
-geoip2
-headers-more
-http concat
-Memc
-Nginx Development Kit
-pagespeed
-Redis2
-set-misc
-Srcache
-upload-progress
+Using nginx-pagespeed from : https://github.com/extremeshok/docker-nginx-pagespeed-build
 
 ## Enviroment Varibles
 
