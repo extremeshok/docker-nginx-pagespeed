@@ -14,7 +14,8 @@ RUN echo "**** install runtime packages ****" \
 
 COPY rootfs/ /
 
-RUN chmod 777 /xshok-init.sh
+RUN chmod 777 /xshok-init.sh \
+  && chmod 755 /usr/sbin/htpasswd.sh
 
 WORKDIR /var/www/html
 
