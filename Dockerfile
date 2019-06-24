@@ -7,8 +7,9 @@ ENV DEBIAN_FRONTEND noninteractive
 USER root
 
 RUN echo "**** install runtime packages ****" \
-  && apt-get update && apt-get install -o Dpkg::Options::="--force-confmiss" -o Dpkg::Options::="--force-confold" -y netcat \
-  && curl \
+  && apt-get update && apt-get install -o Dpkg::Options::="--force-confmiss" -o Dpkg::Options::="--force-confold" -y \
+  netcat \
+  curl \
   && rm -rf /var/lib/apt/lists/*
 
 COPY rootfs/ /
