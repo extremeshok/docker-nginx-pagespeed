@@ -6,20 +6,24 @@ FROM nginx:mainline AS BASE
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN echo "**** install runtime packages ****" \
-  && apt-get update && apt-get install -y netcat \
-  && rm -rf /var/lib/apt/lists/*
-
 USER root
 
 COPY --from=BUILD /usr/local/lib/libbrotlidec.so /usr/local/lib/libbrotlidec.so
 COPY --from=BUILD /usr/local/lib/libbrotlienc.so /usr/local/lib/libbrotlienc.so
 COPY --from=BUILD /usr/local/lib/libmaxminddb.so /usr/local/lib/libmaxminddb.so
+RUN ldconfig
 #/usr/local/src/nginx/nginx-dbg_1.17.0-1~stretch_amd64.deb
 COPY --from=BUILD /usr/local/src/nginx/nginx_1.17.0-1~stretch_amd64.deb /tmp/nginx.deb
 
-RUN cd /tmp \
-&& dpkg -i nginx.deb
+RUN echo "*** installling nginx ***" \
+&& apt-get -y purge nginx* \
+&& dpkg -i /tmp/nginx.deb \
+&& rm -f /tmp/nginx.deb
+
+RUN echo "**** install runtime packages ****" \
+  && apt-get update && apt-get install -y netcat \
+  && curl \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY rootfs/ /
 
@@ -32,9 +36,9 @@ EXPOSE 443
 #CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
 # Configure a healthcheck to validate that everything is working, check if response header returns 200 code OR die
-#HEALTHCHECK --interval=5s --timeout=5s CMD [ "200" = "$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/)" ] || exit 1
+HEALTHCHECK --interval=5s --timeout=5s CMD [ "200" = "$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/)" ] || exit 1
 
 STOPSIGNAL SIGTERM
 
-#CMD ["/xshok-init.sh"]
-CMD ["/bin/sleep","10000000"]
+CMD ["/xshok-init.sh"]
+#CMD ["/bin/sleep","10000000"]
