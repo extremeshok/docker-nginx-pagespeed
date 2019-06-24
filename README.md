@@ -1,12 +1,8 @@
 # docker-nginx-pagespeed
-alpine nginx pagespeed
-
-## Work in progress
-http_image_filter_module
-http_xslt_module
+nginx pagespeed
 
 ## Nginx Modules
-Using a custom nginx-pagespeed build which always follows the latest official releases : https://github.com/extremeshok/docker-nginx-pagespeed-build
+Using a custom nginx build which always follows the latest official releases : https://github.com/extremeshok/docker-nginx
 
 ## Enviroment Varibles
 
