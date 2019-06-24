@@ -6,7 +6,7 @@ http_image_filter_module
 http_xslt_module
 
 ## Nginx Modules
-Using nginx-pagespeed from : https://github.com/extremeshok/docker-nginx-pagespeed-build
+Using a custom nginx-pagespeed build which always follows the latest official releases : https://github.com/extremeshok/docker-nginx-pagespeed-build
 
 ## Enviroment Varibles
 
@@ -29,21 +29,11 @@ NGINX_WORDPRESS_CACHE_ENABLER=
 
 
 ## Features
-
-* Built on the lightweight and secure Alpine Linux distribution
 * Very small Docker image size
-* Optimized for 100 concurrent users
-* Optimized to only use resources when there's traffic (by using PHP-FPM's ondemand PM)
-* The servers Nginx run under a non-privileged user (nobody) to make it more secure
 * The logs of all the services are redirected to the output of the Docker container (visible with `docker logs -f <container name>`)
-* Follows the KISS principle (Keep It Simple, Stupid) to make it easy to understand and adjust the image
-
 
 ## Usage
-
-Start the Docker container:
-
-docker run -rm -ti 433:433 php/7.3-fpm-stretch /bin/bash
-
 Development / Testing
+```
 docker pull extremeshok/nginx-pagespeed:edge && docker run --rm -ti extremeshok/nginx-pagespeed:edge /bin/bash
+```
