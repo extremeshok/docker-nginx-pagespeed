@@ -31,9 +31,12 @@ XS_PHP_FPM_PORT=${NGINX_PHP_FPM_PORT:-9000}
 XS_REDIRECT_WWW_TO_NON=${NGINX_REDIRECT_WWW_TO_NON:-yes}
 XS_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-32}
 
+# redis will take preference if both are set "host:port"
 XS_PAGESPEED_REDIS_HOST=${NGINX_PAGESPEED_REDIS:-no}
 XS_PAGESPEED_MEMCACHED_HOST=${NGINX_PAGESPEED_MEMCACHED:-no}
-# redis will take preference if both are set
+
+# set page speed to use a cdn, "fqdn"
+XS_PAGESPEED_CDN=${NGINX_PAGESPEED_CDN:-no}
 
 XS_WORDPRESS=${NGINX_WORDPRESS:-no}
 XS_WORDPRESS_SUPERCACHE=${NGINX_WORDPRESS_SUPERCACHE:-no}
@@ -98,7 +101,11 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
     if [ -f "/etc/nginx/conf.d/pagespeed_memcached.conf" ] ; then
       rm -f /etc/nginx/conf.d/pagespeed_memcached.conf
     fi
+    if [ -f "/etc/nginx/conf.d/pagespeed_cdn.conf" ] ; then
+      rm -f /etc/nginx/conf.d/pagespeed_cdn.conf
+    fi
   else
+    echo "Pagespeed Enabled"
     if [ -f "/etc/nginx/conf.d/pagespeed.disabled" ] ; then
       mv -f /etc/nginx/conf.d/pagespeed.disabled /etc/nginx/conf.d/pagespeed.conf
     fi
@@ -107,6 +114,7 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
     fi
 
     if [ "$XS_PAGESPEED_REDIS_HOST" != "" ] && [ "$XS_PAGESPEED_REDIS_HOST" != " " ] && [ "$XS_PAGESPEED_REDIS_HOST" != "no" ]; then
+      echo "Pagespeed Redis Enabled ${XS_PAGESPEED_REDIS_HOST}"
       XS_PAGESPEED_MEMCACHED_HOST=""
       cat << EOF > /etc/nginx/conf.d/pagespeed_redis.conf
 pagespeed RedisServer "${XS_PAGESPEED_REDIS_HOST}";
@@ -118,6 +126,7 @@ EOF
       fi
     fi
     if [ "$XS_PAGESPEED_MEMCACHED_HOST" != "" ] && [ "$XS_PAGESPEED_MEMCACHED_HOST" != " " ] && [ "$XS_PAGESPEED_MEMCACHED_HOST" != "no" ]; then
+      echo "Pagespeed Memcached Enabled ${XS_PAGESPEED_MEMCACHED_HOST}"
       cat << EOF > /etc/nginx/conf.d/pagespeed_memcached.conf
 pagespeed MemcachedThreads 1;
 pagespeed MemcachedServers "${XS_PAGESPEED_MEMCACHED_HOST}";
@@ -128,7 +137,18 @@ EOF
         rm -f /etc/nginx/conf.d/pagespeed_memcached.conf
       fi
     fi
-
+    if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
+      echo "Pagespeed CDN Enabled ${XS_PAGESPEED_CDN}"
+      cat << EOF > /etc/nginx/conf.d/pagespeed_cdn.conf
+pagespeed MapRewriteDomain https://${XS_PAGESPEED_CDN}/ https://${HOSTNAME}/;
+ModPagespeedDomain ${HOSTNAME};
+ModPagespeedDomain ${XS_PAGESPEED_CDN};
+EOF
+    else
+      if [ -f "/etc/nginx/conf.d/pagespeed_cdn.conf" ] ; then
+        rm -f /etc/nginx/conf.d/pagespeed_cdn.conf
+      fi
+    fi
   fi
   if [ "$XS_DISABLE_PHP" == "yes" ] || [ "$XS_DISABLE_PHP" == "true" ] || [ "$XS_DISABLE_PHP" == "on" ] || [ "$XS_DISABLE_PHP" == "1" ] ; then
     echo "PHP Disabled"
@@ -329,6 +349,10 @@ EOF
   pagespeed LoadFromFile "https://${primary_hostname}" "/var/www/html";
   pagespeed LoadFromFile "https://www.${primary_hostname}" "/var/www/html";
 EOF
+  if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
+    echo "pagespeed LoadFromFile \"https://${XS_PAGESPEED_CDN}\" \"/var/www/html\";" >> "/etc/nginx/server.d/${primary_hostname}.conf"
+  fi
+
     fi
 
     if [ "$XS_WORDPRESS" == "yes" ] || [ "$XS_WORDPRESS" == "true" ] || [ "$XS_WORDPRESS" == "on" ] || [ "$XS_WORDPRESS" == "1" ] ; then
