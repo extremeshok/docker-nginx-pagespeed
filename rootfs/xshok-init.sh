@@ -141,8 +141,8 @@ EOF
       echo "Pagespeed CDN Enabled ${XS_PAGESPEED_CDN}"
       cat << EOF > /etc/nginx/conf.d/pagespeed_cdn.conf
 pagespeed MapRewriteDomain https://${XS_PAGESPEED_CDN}/ https://${HOSTNAME}/;
-ModPagespeedDomain ${HOSTNAME};
-ModPagespeedDomain ${XS_PAGESPEED_CDN};
+pagespeed Domain ${HOSTNAME};
+pagespeed Domain ${XS_PAGESPEED_CDN};
 EOF
     else
       if [ -f "/etc/nginx/conf.d/pagespeed_cdn.conf" ] ; then
