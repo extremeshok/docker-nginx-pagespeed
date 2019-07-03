@@ -44,6 +44,11 @@ XS_WORDPRESS_CACHE_ENABLER=${NGINX_WORDPRESS_CACHE_ENABLER:-no}
 XS_WORDPRESS_REDISCACHE=${NGINX_WORDPRESS_REDISCACHE:-no}
 XS_WORDPRESS_MEMCACHED=${NGINX_WORDPRESS_MEMCACHED:-no}
 
+# clean the ENV's
+XS_PAGESPEED_CDN=${XS_PAGESPEED_CDN//\"}
+XS_PAGESPEED_REDIS_HOST=${XS_PAGESPEED_REDIS_HOST//\"}
+XS_PAGESPEED_MEMCACHED_HOST=${XS_PAGESPEED_MEMCACHED_HOST//\"}
+
 echo "#### Nginx Generating Configs ####"
 if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/nginx/include.d/" ] && [ -w "/etc/nginx/server.d/" ] ; then
 
