@@ -31,6 +31,10 @@ XS_PHP_FPM_PORT=${NGINX_PHP_FPM_PORT:-9000}
 XS_REDIRECT_WWW_TO_NON=${NGINX_REDIRECT_WWW_TO_NON:-yes}
 XS_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-32}
 
+XS_PAGESPEED_REDIS_HOST=${NGINX_PAGESPEED_REDIS:-no}
+XS_PAGESPEED_MEMCACHED_HOST=${NGINX_PAGESPEED_MEMCACHED:-no}
+# redis will take preference if both are set
+
 XS_WORDPRESS=${NGINX_WORDPRESS:-no}
 XS_WORDPRESS_SUPERCACHE=${NGINX_WORDPRESS_SUPERCACHE:-no}
 XS_WORDPRESS_CACHE_ENABLER=${NGINX_WORDPRESS_CACHE_ENABLER:-no}
@@ -88,6 +92,12 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
     echo "Pagespeed Disabled"
     mv -f /etc/nginx/conf.d/pagespeed.conf /etc/nginx/conf.d/pagespeed.disabled
     mv -f /etc/nginx/include.d/pagespeed.conf /etc/nginx/include.d/pagespeed.disabled
+    if [ -f "/etc/nginx/conf.d/pagespeed_redis.conf" ] ; then
+      rm -f /etc/nginx/conf.d/pagespeed_redis.conf
+    fi
+    if [ -f "/etc/nginx/conf.d/pagespeed_memcached.conf" ] ; then
+      rm -f /etc/nginx/conf.d/pagespeed_memcached.conf
+    fi
   else
     if [ -f "/etc/nginx/conf.d/pagespeed.disabled" ] ; then
       mv -f /etc/nginx/conf.d/pagespeed.disabled /etc/nginx/conf.d/pagespeed.conf
@@ -95,6 +105,30 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
     if [ -f "/etc/nginx/include.d/pagespeed.disabled" ] ; then
       mv -f /etc/nginx/include.d/pagespeed.disabled /etc/nginx/include.d/pagespeed.conf
     fi
+
+    if [ "$XS_PAGESPEED_REDIS_HOST" != "" ] && [ "$XS_PAGESPEED_REDIS_HOST" != " " ] && [ "$XS_PAGESPEED_REDIS_HOST" != "no" ]; then
+      XS_PAGESPEED_MEMCACHED_HOST=""
+      cat << EOF > /etc/nginx/conf.d/pagespeed_redis.conf
+pagespeed RedisServer "${XS_PAGESPEED_REDIS_HOST}";
+pagespeed RedisTimeoutUs 1000;
+EOF
+    else
+      if [ -f "/etc/nginx/conf.d/pagespeed_redis.conf" ] ; then
+        rm -f /etc/nginx/conf.d/pagespeed_redis.conf
+      fi
+    fi
+    if [ "$XS_PAGESPEED_MEMCACHED_HOST" != "" ] && [ "$XS_PAGESPEED_MEMCACHED_HOST" != " " ] && [ "$XS_PAGESPEED_MEMCACHED_HOST" != "no" ]; then
+      cat << EOF > /etc/nginx/conf.d/pagespeed_memcached.conf
+pagespeed MemcachedThreads 1;
+pagespeed MemcachedServers "${XS_PAGESPEED_MEMCACHED_HOST}";
+pagespeed MemcachedTimeoutUs 100000;
+EOF
+    else
+      if [ -f "/etc/nginx/conf.d/pagespeed_memcached.conf" ] ; then
+        rm -f /etc/nginx/conf.d/pagespeed_memcached.conf
+      fi
+    fi
+
   fi
   if [ "$XS_DISABLE_PHP" == "yes" ] || [ "$XS_DISABLE_PHP" == "true" ] || [ "$XS_DISABLE_PHP" == "on" ] || [ "$XS_DISABLE_PHP" == "1" ] ; then
     echo "PHP Disabled"
@@ -199,7 +233,7 @@ for myhostnames in ${XS_DOMAINS//\;/ } ; do
       sleep 3
     done
     while ! [ -r "/certs/${primary_hostname}/fullchain.pem" ] ; do
-      echo "Waiting for certs (/certs/${primary_hostname}/fullchain.pe) to be provisioned..."
+      echo "Waiting for certs (/certs/${primary_hostname}/fullchain.pem) to be provisioned..."
       sleep 3
     done
     while ! [ -r "/certs/${primary_hostname}/privkey.pem" ] ; do

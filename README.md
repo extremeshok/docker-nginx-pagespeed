@@ -24,6 +24,10 @@ NGINX_WORDPRESS_SUPERCACHE=
 NGINX_WORDPRESS_CACHE_ENABLER=
 
 
+# redis will take preference if both are set
+NGINX_PAGESPEED_REDIS_HOST=no (specify host and port NGINX_PAGESPEED_REDIS_HOST="redis:6379")
+NGINX_PAGESPEED_MEMCACHED_HOST=no
+
 ## Features
 * Very small Docker image size
 * The logs of all the services are redirected to the output of the Docker container (visible with `docker logs -f <container name>`)
@@ -31,5 +35,5 @@ NGINX_WORDPRESS_CACHE_ENABLER=
 ## Usage
 Development / Testing
 ```
-docker pull extremeshok/nginx-pagespeed:edge && docker run --rm -ti extremeshok/nginx-pagespeed:edge /bin/bash
+docker pull extremeshok/nginx-pagespeed:latest && docker run --rm -ti extremeshok/nginx-pagespeed:latest /bin/bash
 ```
