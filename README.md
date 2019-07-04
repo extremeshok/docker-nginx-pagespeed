@@ -28,6 +28,7 @@ Using a custom nginx build which always follows the latest official releases : h
 * NGINX_PAGESPEED_REDIS_HOST=no (specify host and port NGINX_PAGESPEED_REDIS_HOST="redis:6379")
 * NGINX_PAGESPEED_MEMCACHED_HOST=no
 * NGINX_PAGESPEED_CDN=no (specifiy fqdn of your cdn)
+* NGINX_PAGESPEED_FORCE_CDN=no (true to rewrite the urls to that of the cdn)
 
 ## Features
 * Very small Docker image size
