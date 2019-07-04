@@ -146,8 +146,8 @@ EOF
       echo "Pagespeed CDN Enabled ${XS_PAGESPEED_CDN}"
       cat << EOF > /etc/nginx/conf.d/pagespeed_cdn.conf
 pagespeed MapRewriteDomain https://${XS_PAGESPEED_CDN}/ https://${HOSTNAME}/;
-pagespeed Domain ${HOSTNAME};
-pagespeed Domain ${XS_PAGESPEED_CDN};
+pagespeed Domain https://${HOSTNAME};
+pagespeed Domain https://${XS_PAGESPEED_CDN};
 EOF
     else
       if [ -f "/etc/nginx/conf.d/pagespeed_cdn.conf" ] ; then
@@ -354,9 +354,9 @@ EOF
   pagespeed LoadFromFile "https://${primary_hostname}" "/var/www/html";
   pagespeed LoadFromFile "https://www.${primary_hostname}" "/var/www/html";
 EOF
-  if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
-    echo "pagespeed LoadFromFile \"https://${XS_PAGESPEED_CDN}\" \"/var/www/html\";" >> "/etc/nginx/server.d/${primary_hostname}.conf"
-  fi
+      if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
+        echo "pagespeed LoadFromFile \"https://${XS_PAGESPEED_CDN}\" \"/var/www/html\";" >> "/etc/nginx/server.d/${primary_hostname}.conf"
+      fi
 
     fi
 
