@@ -357,7 +357,16 @@ EOF
   pagespeed Domain https://${primary_hostname};
   pagespeed SslCertDirectory /certs/;
   pagespeed LoadFromFile "https://${primary_hostname}" "/var/www/html";
+  # Disallow not supported files
+  pagespeed LoadFromFileRuleMatch disallow .*;
+  pagespeed LoadFromFileRuleMatch disallow \.svg\$;
+  pagespeed LoadFromFileRuleMatch disallow \.cur\$;
   pagespeed LoadFromFile "https://www.${primary_hostname}" "/var/www/html";
+  # Disallow not supported files
+  pagespeed LoadFromFileRuleMatch disallow .*;
+  pagespeed LoadFromFileRuleMatch disallow \.svg\$;
+  pagespeed LoadFromFileRuleMatch disallow \.cur\$;
+
 EOF
       if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
         echo "pagespeed LoadFromFile \"https://${XS_PAGESPEED_CDN}\" \"/var/www/html\";" >> "/etc/nginx/server.d/${primary_hostname}.conf"
