@@ -353,22 +353,30 @@ EOF
         echo "pagespeed SslCertFile /certs/${primary_hostname}/chain.pem;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
       fi
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
-  pagespeed on;
-  pagespeed Domain https://${primary_hostname};
-  pagespeed SslCertDirectory /certs/;
-  pagespeed LoadFromFile "https://${primary_hostname}" "/var/www/html";
-  # Disallow not supported files
-  pagespeed LoadFromFileRuleMatch disallow .*;
-  pagespeed LoadFromFileRuleMatch disallow \.svg\$ps_dollar;
-  pagespeed LoadFromFileRuleMatch disallow \.cur\$ps_dollar;
-  pagespeed LoadFromFile "https://www.${primary_hostname}" "/var/www/html";
-  # Disallow not supported files
-  pagespeed LoadFromFileRuleMatch disallow .*;
-  pagespeed LoadFromFileRuleMatch disallow \.svg\$ps_dollar;
-  pagespeed LoadFromFileRuleMatch disallow \.cur\$ps_dollar;
-
+pagespeed on;
+pagespeed Domain https://${primary_hostname};
+pagespeed SslCertDirectory /certs/;
+EOF
+      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+pagespeed LoadFromFile "https://${primary_hostname}" "/var/www/html";
+pagespeed LoadFromFileRuleMatch disallow .*;
+pagespeed LoadFromFileRuleMatch disallow \.svg\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.cur\$ps_dollar;
+EOF
+      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+pagespeed LoadFromFile "https://www.${primary_hostname}" "/var/www/html";
+pagespeed LoadFromFileRuleMatch disallow .*;
+pagespeed LoadFromFileRuleMatch disallow \.svg\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.cur\$ps_dollar;
 EOF
       if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
+        cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+pagespeed LoadFromFile "https://www.${XS_PAGESPEED_CDN}" "/var/www/html";
+pagespeed LoadFromFileRuleMatch disallow .*;
+pagespeed LoadFromFileRuleMatch disallow \.svg\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.cur\$ps_dollar;
+EOF
+
         echo "pagespeed LoadFromFile \"https://${XS_PAGESPEED_CDN}\" \"/var/www/html\";" >> "/etc/nginx/server.d/${primary_hostname}.conf"
       fi
 
