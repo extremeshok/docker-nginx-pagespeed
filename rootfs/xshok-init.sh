@@ -359,13 +359,13 @@ EOF
   pagespeed LoadFromFile "https://${primary_hostname}" "/var/www/html";
   # Disallow not supported files
   pagespeed LoadFromFileRuleMatch disallow .*;
-  pagespeed LoadFromFileRuleMatch disallow \.svg\$;
-  pagespeed LoadFromFileRuleMatch disallow \.cur\$;
+  pagespeed LoadFromFileRuleMatch disallow \.svg\$ps_dollar;
+  pagespeed LoadFromFileRuleMatch disallow \.cur\$ps_dollar;
   pagespeed LoadFromFile "https://www.${primary_hostname}" "/var/www/html";
   # Disallow not supported files
   pagespeed LoadFromFileRuleMatch disallow .*;
-  pagespeed LoadFromFileRuleMatch disallow \.svg\$;
-  pagespeed LoadFromFileRuleMatch disallow \.cur\$;
+  pagespeed LoadFromFileRuleMatch disallow \.svg\$ps_dollar;
+  pagespeed LoadFromFileRuleMatch disallow \.cur\$ps_dollar;
 
 EOF
       if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
