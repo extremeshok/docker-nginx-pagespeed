@@ -359,25 +359,34 @@ pagespeed SslCertDirectory /certs/;
 EOF
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 pagespeed LoadFromFile "https://${primary_hostname}" "/var/www/html";
-pagespeed LoadFromFileRuleMatch disallow .*;
-pagespeed LoadFromFileRuleMatch disallow \.svg\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.cur\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.php\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.py\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.pl\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.cgi\$ps_dollar;
 EOF
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 pagespeed LoadFromFile "https://www.${primary_hostname}" "/var/www/html";
-pagespeed LoadFromFileRuleMatch disallow .*;
-pagespeed LoadFromFileRuleMatch disallow \.svg\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.cur\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.php\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.py\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.pl\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.cgi\$ps_dollar;
 EOF
       if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
         cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 pagespeed LoadFromFile "https://www.${XS_PAGESPEED_CDN}" "/var/www/html";
-pagespeed LoadFromFileRuleMatch disallow .*;
-pagespeed LoadFromFileRuleMatch disallow \.svg\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.cur\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.php\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.py\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.pl\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.cgi\$ps_dollar;
 EOF
 
-        echo "pagespeed LoadFromFile \"https://${XS_PAGESPEED_CDN}\" \"/var/www/html\";" >> "/etc/nginx/server.d/${primary_hostname}.conf"
+cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+pagespeed LoadFromFile "https://${XS_PAGESPEED_CDN}" "/var/www/html";
+pagespeed LoadFromFileRuleMatch disallow \.php\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.py\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.pl\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow \.cgi\$ps_dollar;
+EOF
       fi
 
     fi
