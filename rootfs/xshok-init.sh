@@ -359,33 +359,49 @@ pagespeed SslCertDirectory /certs/;
 EOF
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 pagespeed LoadFromFile "https://${primary_hostname}" "/var/www/html";
-pagespeed LoadFromFileRuleMatch disallow \.php\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.py\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.pl\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.cgi\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow .*;
+pagespeed LoadFromFileRuleMatch allow \.css\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.js\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.gif\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.jpe?g\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.jpg\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.png\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.webp\$ps_dollar;
 EOF
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 pagespeed LoadFromFile "https://www.${primary_hostname}" "/var/www/html";
-pagespeed LoadFromFileRuleMatch disallow \.php\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.py\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.pl\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.cgi\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow .*;
+pagespeed LoadFromFileRuleMatch allow \.css\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.js\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.gif\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.jpe?g\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.jpg\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.png\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.webp\$ps_dollar;
 EOF
       if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
         cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 pagespeed LoadFromFile "https://www.${XS_PAGESPEED_CDN}" "/var/www/html";
-pagespeed LoadFromFileRuleMatch disallow \.php\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.py\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.pl\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.cgi\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow .*;
+pagespeed LoadFromFileRuleMatch allow \.css\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.js\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.gif\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.jpe?g\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.jpg\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.png\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.webp\$ps_dollar;
 EOF
 
 cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 pagespeed LoadFromFile "https://${XS_PAGESPEED_CDN}" "/var/www/html";
-pagespeed LoadFromFileRuleMatch disallow \.php\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.py\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.pl\$ps_dollar;
-pagespeed LoadFromFileRuleMatch disallow \.cgi\$ps_dollar;
+pagespeed LoadFromFileRuleMatch disallow .*;
+pagespeed LoadFromFileRuleMatch allow \.css\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.js\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.gif\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.jpe?g\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.jpg\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.png\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.webp\$ps_dollar;
 EOF
       fi
 
