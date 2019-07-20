@@ -103,7 +103,7 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
     if [ -f "/etc/nginx/conf.d/geoip2.disabled" ] ; then
       mv -f /etc/nginx/conf.d/geoip2.disabled /etc/nginx/conf.d/geoip2.conf
     fi
-    XS_PHP_CONF="php_geoip.php"
+    XS_PHP_CONF="php_geoip.conf"
   fi
   if [ "$XS_DISABLE_PAGESPEED" == "yes" ] || [ "$XS_DISABLE_PAGESPEED" == "true" ] || [ "$XS_DISABLE_PAGESPEED" == "on" ] || [ "$XS_DISABLE_PAGESPEED" == "1" ] ; then
     echo "Pagespeed Disabled"
