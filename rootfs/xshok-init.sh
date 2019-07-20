@@ -50,6 +50,9 @@ XS_PAGESPEED_CDN=${XS_PAGESPEED_CDN//\"}
 XS_PAGESPEED_REDIS_HOST=${XS_PAGESPEED_REDIS_HOST//\"}
 XS_PAGESPEED_MEMCACHED_HOST=${XS_PAGESPEED_MEMCACHED_HOST//\"}
 
+#varibles
+XS_PHP_CONF="php.conf"
+
 echo "#### Nginx Generating Configs ####"
 if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/nginx/include.d/" ] && [ -w "/etc/nginx/server.d/" ] ; then
 
@@ -87,8 +90,12 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
   fi
   if [ "$XS_DISABLE_GEOIP" == "yes" ] || [ "$XS_DISABLE_GEOIP" == "true" ] || [ "$XS_DISABLE_GEOIP" == "on" ] || [ "$XS_DISABLE_GEOIP" == "1" ] ; then
     echo "GEOIP Disabled"
-    mv -f /etc/nginx/modules/http_geoip2.conf /etc/nginx/modules/http_geoip2.disabled
-    mv -f /etc/nginx/conf.d/geoip2.conf /etc/nginx/conf.d/geoip2.disabled
+    if [ -f "/etc/nginx/modules/http_geoip2.conf" ] ; then
+      mv -f /etc/nginx/modules/http_geoip2.conf /etc/nginx/modules/http_geoip2.disabled
+    fi
+    if [ -f "/etc/nginx/conf.d/geoip2.conf" ] ; then
+      mv -f /etc/nginx/conf.d/geoip2.conf /etc/nginx/conf.d/geoip2.disabled
+    fi
   else
     if [ -f "/etc/nginx/modules/http_geoip2.disabled" ] ; then
       mv -f /etc/nginx/modules/http_geoip2.disabled /etc/nginx/modules/http_geoip2.conf
@@ -96,6 +103,7 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
     if [ -f "/etc/nginx/conf.d/geoip2.disabled" ] ; then
       mv -f /etc/nginx/conf.d/geoip2.disabled /etc/nginx/conf.d/geoip2.conf
     fi
+    XS_PHP_CONF="php_geoip.php"
   fi
   if [ "$XS_DISABLE_PAGESPEED" == "yes" ] || [ "$XS_DISABLE_PAGESPEED" == "true" ] || [ "$XS_DISABLE_PAGESPEED" == "on" ] || [ "$XS_DISABLE_PAGESPEED" == "1" ] ; then
     echo "Pagespeed Disabled"
@@ -456,7 +464,7 @@ location ~* /(wp-login\.php) {
     limit_conn xwpconlimit 30;
     #auth_basic "Private";
     #auth_basic_user_file htpasswd.conf;
-    include /etc/nginx/includes/php_geoip.conf;
+    include /etc/nginx/includes/${XS_PHP_CONF};
 }
 
 location ~* /(xmlrpc\.php) {
@@ -478,7 +486,7 @@ location ~* /wp-admin/(load-styles\.php) {
 }
 
 include /etc/nginx/includes/wordpress-secure.conf;
-include /etc/nginx/includes/php_geoip.conf;
+include /etc/nginx/includes/${XS_PHP_CONF};
 include /etc/nginx/include.d/*.conf;
 }
 EOF
@@ -518,7 +526,7 @@ include /etc/nginx/includes/php.conf;
 EOF
         else
           cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
-include /etc/nginx/includes/php_geoip.conf;
+include /etc/nginx/includes/${XS_PHP_CONF};
 }
 EOF
         fi
