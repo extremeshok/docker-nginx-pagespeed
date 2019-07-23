@@ -458,6 +458,12 @@ location / {
 EOF
       fi
 
+if [ "$XS_DISABLE_PAGESPEED" == "yes" ] || [ "$XS_DISABLE_PAGESPEED" == "true" ] || [ "$XS_DISABLE_PAGESPEED" == "on" ] || [ "$XS_DISABLE_PAGESPEED" == "1" ] ; then
+  disable_pagespeed_string="pagespeed off;"
+else
+  disable_pagespeed_string=""
+fi
+
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 location ~* /(wp-login\.php) {
     limit_req zone=xwplogin burst=1 nodelay;
@@ -468,22 +474,38 @@ location ~* /(wp-login\.php) {
 }
 
 location ~* /(xmlrpc\.php) {
+    ${disable_pagespeed_string}
     limit_req zone=xwprpc burst=45 nodelay;
     limit_conn xwpconlimit 30;
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(load-scripts\.php) {
+    ${disable_pagespeed_string}
     limit_req zone=xwprpc burst=5 nodelay;
     limit_conn xwpconlimit 30;
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(load-styles\.php) {
+    ${disable_pagespeed_string}
     limit_req zone=xwprpc burst=5 nodelay;
     limit_conn xwpconlimit 30;
     include /etc/nginx/includes/php.conf;
 }
+
+location ~* /wp-admin/(admin-ajax\.php) {
+    ${disable_pagespeed_string}
+    limit_req zone=xwprpc burst=5 nodelay;
+    limit_conn xwpconlimit 30;
+    include /etc/nginx/includes/php.conf;
+}
+
+location ~* /wp-admin/ {
+    ${disable_pagespeed_string}
+    include /etc/nginx/includes/php.conf;
+}
+
 
 include /etc/nginx/includes/wordpress-secure.conf;
 include /etc/nginx/includes/${XS_PHP_CONF};
