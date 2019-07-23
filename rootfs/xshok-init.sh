@@ -361,7 +361,6 @@ EOF
         echo "pagespeed SslCertFile /certs/${primary_hostname}/chain.pem;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
       fi
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
-pagespeed on;
 pagespeed Domain https://${primary_hostname};
 pagespeed SslCertDirectory /certs/;
 EOF
@@ -416,6 +415,12 @@ EOF
     fi
 
     if [ "$XS_WORDPRESS" == "yes" ] || [ "$XS_WORDPRESS" == "true" ] || [ "$XS_WORDPRESS" == "on" ] || [ "$XS_WORDPRESS" == "1" ] ; then
+
+      cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+pagespeed off;
+pagespeed Disallow "*/wp-admin/*";
+pagespeed Allow "*/wp-admin/*.css";
+EOF
 
       if [ "$XS_WORDPRESS_CACHE_ENABLER" == "yes" ] || [ "$XS_WORDPRESS_CACHE_ENABLER" == "true" ] || [ "$XS_WORDPRESS_CACHE_ENABLER" == "on" ] || [ "$XS_WORDPRESS_CACHE_ENABLER" == "1" ] ; then
         cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
@@ -506,6 +511,7 @@ location ~* /wp-admin/ {
     include /etc/nginx/includes/php.conf;
 }
 
+pagespeed on;
 
 include /etc/nginx/includes/wordpress-secure.conf;
 include /etc/nginx/includes/${XS_PHP_CONF};
