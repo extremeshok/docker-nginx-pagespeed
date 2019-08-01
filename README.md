@@ -1,5 +1,5 @@
 # docker-nginx-pagespeed
-nginx pagespeed
+https://hub.docker.com/r/extremeshok/nginx-pagespeed
 
 ## Nginx Modules
 Using a custom nginx build which always follows the latest official releases : https://github.com/extremeshok/docker-nginx
