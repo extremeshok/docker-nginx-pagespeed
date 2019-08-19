@@ -179,7 +179,8 @@ EOF
 upstream php_upstream {
 zone php_upstream_zone 128k;
 server ${XS_PHP_FPM_HOST}:${XS_PHP_FPM_PORT};
-keepalive 2;
+server ${XS_PHP_FPM_HOST}:${XS_PHP_FPM_PORT} backup; #Fallback
+keepalive 128;
 }
 EOF
   fi
@@ -294,7 +295,7 @@ for myhostnames in ${XS_DOMAINS//\;/ } ; do
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 ########################## www httpS (443) to non-www https (443)  ##########################
 server {
-listen 443 ssl http2;
+listen 443 ssl http2 reuseport;
 server_name www.${primary_hostname};
 EOF
       if [ -r "/certs/${primary_hostname}/fullchain.pem" ] && [ -r "/certs/${primary_hostname}/privkey.pem" ] && [ -r "/certs/${primary_hostname}/chain.pem" ] ; then
@@ -314,14 +315,14 @@ return 302 https://${primary_hostname}\$request_uri;
 }
 ########################## *. httpS (443) ##########################
 server {
-listen 443 ssl http2 backlog=256;
+listen 443 ssl http2 backlog=256 reuseport;
 server_name ${primary_hostname};
 EOF
     else
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 ########################## *. httpS (443) ##########################
 server {
-listen 443 ssl http2 backlog=256;
+listen 443 ssl http2 backlog=256 reuseport;
 EOF
       if [ "$XS_REDIRECT_WWW_TO_NON" != "yes" ] && [ "$XS_REDIRECT_WWW_TO_NON" != "true" ] && [ "$XS_REDIRECT_WWW_TO_NON" != "on" ] && [ "$XS_REDIRECT_WWW_TO_NON" != "1" ] && [ "${primary_hostname:0:4}" != "www." ] ; then
         echo "server_name ${primary_hostname} www.${primary_hostname} ${secondary_hostnames};" >> "/etc/nginx/server.d/${primary_hostname}.conf"
