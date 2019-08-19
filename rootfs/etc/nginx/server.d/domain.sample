@@ -8,7 +8,7 @@
 
 ########################## www httpS (443) to non-www https (443)  ##########################
 # server {
-#   listen 443 ssl http2 reuseport;
+#   listen 443 ssl http2;
 #   server_name www.domain.sample;
 #
 # 	ssl_certificate      /certs/test.domain.sample/fullchain.pem;
@@ -23,7 +23,7 @@
 ########################## *. httpS (443) ##########################
 server
 {
-  listen 443 ssl http2;
+  listen 443 ssl http2 reuseport;
   server_name test.domain.sample www.domain.sample;
 
   root /var/www/html;

@@ -295,7 +295,7 @@ for myhostnames in ${XS_DOMAINS//\;/ } ; do
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 ########################## www httpS (443) to non-www https (443)  ##########################
 server {
-listen 443 ssl http2 reuseport;
+listen 443 ssl http2;
 server_name www.${primary_hostname};
 EOF
       if [ -r "/certs/${primary_hostname}/fullchain.pem" ] && [ -r "/certs/${primary_hostname}/privkey.pem" ] && [ -r "/certs/${primary_hostname}/chain.pem" ] ; then
