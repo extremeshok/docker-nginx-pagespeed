@@ -133,6 +133,7 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
       cat << EOF > /etc/nginx/conf.d/pagespeed_redis.conf
 pagespeed RedisServer "${XS_PAGESPEED_REDIS_HOST}";
 pagespeed RedisTimeoutUs 1000;
+pagespeed RedisDatabaseIndex 2;
 EOF
     else
       if [ -f "/etc/nginx/conf.d/pagespeed_redis.conf" ] ; then
