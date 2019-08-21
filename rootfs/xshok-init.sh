@@ -156,13 +156,17 @@ EOF
     echo "Pagespeed CDN Enabled ${XS_PAGESPEED_CDN}"
     if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
       cat << EOF > /etc/nginx/conf.d/pagespeed_cdn.conf
-pagespeed Domain ${HOSTNAME};
-pagespeed Domain https://${HOSTNAME};
-pagespeed Domain ${XS_PAGESPEED_CDN};
-pagespeed Domain https://${XS_PAGESPEED_CDN};
+pagespeed Domain "${HOSTNAME}";
+pagespeed Domain "https://${HOSTNAME}";
+pagespeed Domain "${XS_PAGESPEED_CDN}";
+pagespeed Domain "https://${XS_PAGESPEED_CDN}";
 EOF
       if [ "$XS_PAGESPEED_FORCE_CDN" == "yes" ] || [ "$XS_PAGESPEED_FORCE_CDN" == "true" ] || [ "$XS_PAGESPEED_FORCE_CDN" == "on" ] || [ "$XS_PAGESPEED_FORCE_CDN" == "1" ] ; then
-        echo "pagespeed MapRewriteDomain ${XS_PAGESPEED_CDN} ${HOSTNAME};" >> /etc/nginx/conf.d/pagespeed_cdn.conf
+        cat << EOF >> /etc/nginx/conf.d/pagespeed_cdn.conf
+pagespeed MapOriginDomain "https://${primary_hostname}" "https://${XS_PAGESPEED_CDN}";
+pagespeed MapRewriteDomain "https://${XS_PAGESPEED_CDN}" "https://${HOSTNAME}";
+EOF
+
       fi
     else
       if [ -f "/etc/nginx/conf.d/pagespeed_cdn.conf" ] ; then
