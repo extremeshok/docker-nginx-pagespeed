@@ -181,7 +181,7 @@ EOF
 upstream php_upstream {
 zone php_upstream_zone 128k;
 server ${XS_PHP_FPM_HOST}:${XS_PHP_FPM_PORT};
-server ${XS_PHP_FPM_HOST}:${XS_PHP_FPM_PORT} backup; #Fallback
+server ${XS_PHP_FPM_HOST}:${XS_PHP_FPM_PORT} backup;
 keepalive 128;
 }
 EOF
