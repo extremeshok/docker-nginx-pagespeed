@@ -602,6 +602,7 @@ if [ "$XS_DISABLE_PAGESPEED" != "yes" ] && [ "$XS_DISABLE_PAGESPEED" != "true" ]
   echo "Configuring pagespeed cache dir : /var/cache/pagespeed"
   mkdir -p /var/cache/pagespeed/shm_metadata_cache
   mkdir -p /var/cache/pagespeed/shared
+  mkdir -p /var/cache/pagespeed/log
   mkdir -p /var/cache/pagespeed/v3
   touch '/var/cache/pagespeed/!clean!time!'
   chmod -R 777 /var/cache/pagespeed

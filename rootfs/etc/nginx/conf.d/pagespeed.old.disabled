@@ -25,8 +25,6 @@ pagespeed EnableFilters extend_cache;
 # optimize the content of a resource that's requested using the original (non-pagespeed) URL
 # will slow the page down.. (will not use the pagespeed file names)
 pagespeed InPlaceResourceOptimization off;
-#pagespeed InPlaceWaitForOptimized on;
-#pagespeed InPlaceRewriteDeadlineMs 10000;
 
 pagespeed EnableCachePurge on;
 pagespeed PurgeMethod PURGE;
@@ -68,8 +66,8 @@ pagespeed XHeaderValue "powered by eXtremeSHOK.com";
 
 pagespeed ForbidAllDisabledFilters true;
 
-pagespeed StatisticsLogging off;
-pagespeed LogDir "/var/log/pagespeed";
+pagespeed StatisticsLogging on;
+pagespeed LogDir "/var/cache/pagespeed/log/";
 
 pagespeed FileCachePath "/var/cache/pagespeed/";
 
