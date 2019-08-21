@@ -373,50 +373,54 @@ EOF
 pagespeed Domain https://${primary_hostname};
 EOF
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+pagespeed LoadFromFile "http://${primary_hostname}" "/var/www/html";
 pagespeed LoadFromFile "https://${primary_hostname}" "/var/www/html";
 pagespeed LoadFromFileRuleMatch disallow .*;
-pagespeed LoadFromFileRuleMatch allow \.css\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.js\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.gif\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.jpe?g\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.jpg\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.png\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.webp\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.css\$;
+pagespeed LoadFromFileRuleMatch allow \.js\$;
+pagespeed LoadFromFileRuleMatch allow \.gif\$;
+pagespeed LoadFromFileRuleMatch allow \.jpe?g\$;
+pagespeed LoadFromFileRuleMatch allow \.jpg\$;
+pagespeed LoadFromFileRuleMatch allow \.png\$;
+pagespeed LoadFromFileRuleMatch allow \.webp\$;
 EOF
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+pagespeed LoadFromFile "http://www.${primary_hostname}" "/var/www/html";
 pagespeed LoadFromFile "https://www.${primary_hostname}" "/var/www/html";
 pagespeed LoadFromFileRuleMatch disallow .*;
-pagespeed LoadFromFileRuleMatch allow \.css\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.js\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.gif\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.jpe?g\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.jpg\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.png\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.webp\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.css\$;
+pagespeed LoadFromFileRuleMatch allow \.js\$;
+pagespeed LoadFromFileRuleMatch allow \.gif\$;
+pagespeed LoadFromFileRuleMatch allow \.jpe?g\$;
+pagespeed LoadFromFileRuleMatch allow \.jpg\$;
+pagespeed LoadFromFileRuleMatch allow \.png\$;
+pagespeed LoadFromFileRuleMatch allow \.webp\$;
 EOF
       if [ "$XS_PAGESPEED_CDN" != "" ] && [ "$XS_PAGESPEED_CDN" != " " ] && [ "$XS_PAGESPEED_CDN" != "no" ]; then
         cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+pagespeed LoadFromFile "http://www.${XS_PAGESPEED_CDN}" "/var/www/html";
 pagespeed LoadFromFile "https://www.${XS_PAGESPEED_CDN}" "/var/www/html";
 pagespeed LoadFromFileRuleMatch disallow .*;
-pagespeed LoadFromFileRuleMatch allow \.css\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.js\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.gif\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.jpe?g\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.jpg\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.png\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.webp\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.css\$;
+pagespeed LoadFromFileRuleMatch allow \.js\$;
+pagespeed LoadFromFileRuleMatch allow \.gif\$;
+pagespeed LoadFromFileRuleMatch allow \.jpe?g\$;
+pagespeed LoadFromFileRuleMatch allow \.jpg\$;
+pagespeed LoadFromFileRuleMatch allow \.png\$;
+pagespeed LoadFromFileRuleMatch allow \.webp\$;
 EOF
 
 cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
+pagespeed LoadFromFile "http://${XS_PAGESPEED_CDN}" "/var/www/html";
 pagespeed LoadFromFile "https://${XS_PAGESPEED_CDN}" "/var/www/html";
 pagespeed LoadFromFileRuleMatch disallow .*;
-pagespeed LoadFromFileRuleMatch allow \.css\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.js\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.gif\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.jpe?g\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.jpg\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.png\$ps_dollar;
-pagespeed LoadFromFileRuleMatch allow \.webp\$ps_dollar;
+pagespeed LoadFromFileRuleMatch allow \.css\$;
+pagespeed LoadFromFileRuleMatch allow \.js\$;
+pagespeed LoadFromFileRuleMatch allow \.gif\$;
+pagespeed LoadFromFileRuleMatch allow \.jpe?g\$;
+pagespeed LoadFromFileRuleMatch allow \.jpg\$;
+pagespeed LoadFromFileRuleMatch allow \.png\$;
+pagespeed LoadFromFileRuleMatch allow \.webp\$;
 EOF
       fi
 
