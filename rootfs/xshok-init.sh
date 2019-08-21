@@ -135,6 +135,8 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
       cat << EOF > /etc/nginx/conf.d/pagespeed_redis.conf
 pagespeed RedisServer "${XS_PAGESPEED_REDIS_HOST}:${XS_PAGESPEED_REDIS_PORT}";
 pagespeed RedisTTLSec 86400;
+pagespeed LRUCacheKbPerProcess 16384;
+pagespeed LRUCacheByteLimit 32768;
 EOF
     else
       if [ -f "/etc/nginx/conf.d/pagespeed_redis.conf" ] ; then
