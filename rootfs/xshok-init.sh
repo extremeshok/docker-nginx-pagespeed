@@ -33,6 +33,7 @@ XS_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-32}
 
 # redis will take preference if both are set "host:port"
 XS_PAGESPEED_REDIS_HOST=${NGINX_PAGESPEED_REDIS:-no}
+XS_PAGESPEED_REDIS_PORT=${NGINX_PAGESPEED_REDIS_PORT:-6379}
 XS_PAGESPEED_MEMCACHED_HOST=${NGINX_PAGESPEED_MEMCACHED:-no}
 
 # set page speed to use a cdn, "fqdn"
@@ -48,6 +49,7 @@ XS_WORDPRESS_MEMCACHED=${NGINX_WORDPRESS_MEMCACHED:-no}
 # clean the ENV's
 XS_PAGESPEED_CDN=${XS_PAGESPEED_CDN//\"}
 XS_PAGESPEED_REDIS_HOST=${XS_PAGESPEED_REDIS_HOST//\"}
+XS_PAGESPEED_REDIS_PORT=${XS_PAGESPEED_REDIS_PORT//\"}
 XS_PAGESPEED_MEMCACHED_HOST=${XS_PAGESPEED_MEMCACHED_HOST//\"}
 
 #varibles
@@ -131,9 +133,8 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
       echo "Pagespeed Redis Enabled ${XS_PAGESPEED_REDIS_HOST}"
       XS_PAGESPEED_MEMCACHED_HOST=""
       cat << EOF > /etc/nginx/conf.d/pagespeed_redis.conf
-pagespeed RedisServer "${XS_PAGESPEED_REDIS_HOST}";
-pagespeed RedisTimeoutUs 1000;
-pagespeed RedisDatabaseIndex 2;
+pagespeed RedisServer "${XS_PAGESPEED_REDIS_HOST}:${XS_PAGESPEED_REDIS_PORT}";
+pagespeed RedisTTLSec 86400;
 EOF
     else
       if [ -f "/etc/nginx/conf.d/pagespeed_redis.conf" ] ; then
