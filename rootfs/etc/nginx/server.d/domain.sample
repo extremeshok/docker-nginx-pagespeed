@@ -40,9 +40,6 @@ server
   pagespeed on;
   pagespeed Domain https://test.domain.sample;
 
-  pagespeed SslCertDirectory /certs/;
-  pagespeed SslCertFile /certs/chain.pem;
-
   pagespeed LoadFromFile "https://test.domain.sample" "/var/www/";
   pagespeed LoadFromFile "https://domain.sample" "/var/www/";
 

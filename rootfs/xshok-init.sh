@@ -365,7 +365,6 @@ EOF
       fi
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 pagespeed Domain https://${primary_hostname};
-pagespeed SslCertDirectory /certs/;
 EOF
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 pagespeed LoadFromFile "https://${primary_hostname}" "/var/www/html";
