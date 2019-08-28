@@ -366,7 +366,8 @@ ssl_certificate_key /certs/privkey.pem;
 EOF
     fi
 
-    include /etc/nginx/include.blocks.d/*.conf;
+    #security blocks
+    echo "include /etc/nginx/include.blocks.d/*.conf;" >> "/etc/nginx/server.d/${primary_hostname}.conf"
 
     if [ "$XS_DISABLE_PAGESPEED" != "yes" ] && [ "$XS_DISABLE_PAGESPEED" != "true" ] && [ "$XS_DISABLE_PAGESPEED" != "on" ] && [ "$XS_DISABLE_PAGESPEED" != "1" ] ; then
       if [ -r "/certs/${primary_hostname}/fullchain.pem" ] && [ -r "/certs/${primary_hostname}/privkey.pem" ] && [ -r "/certs/${primary_hostname}/chain.pem" ] ; then
