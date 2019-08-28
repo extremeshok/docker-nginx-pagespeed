@@ -36,6 +36,9 @@ XS_PAGESPEED_REDIS_HOST=${NGINX_PAGESPEED_REDIS:-no}
 XS_PAGESPEED_REDIS_PORT=${NGINX_PAGESPEED_REDIS_PORT:-6379}
 XS_PAGESPEED_MEMCACHED_HOST=${NGINX_PAGESPEED_MEMCACHED:-no}
 
+# globalbalcklist (bot, ip, referer, useragent blocker)
+XS_UPDATE_GLOBALBLACKLIST=${NGINX_UPDATE_GLOBALBLACKLIST:-yes}
+
 # set page speed to use a cdn, "fqdn"
 XS_PAGESPEED_CDN=${NGINX_PAGESPEED_CDN:-no}
 XS_PAGESPEED_FORCE_CDN=${NGINX_PAGESPEED_FORCE_CDN:-no}
@@ -600,6 +603,17 @@ if [ "$XS_DISABLE_GEOIP" != "yes" ] && [ "$XS_DISABLE_GEOIP" != "true" ] && [ "$
     sleep 2
   done
 fi
+
+if [ "$XS_UPDATE_GLOBALBLACKLIST" == "yes" ] || [ "$XS_UPDATE_GLOBALBLACKLIST" == "true" ] || [ "$XS_UPDATE_GLOBALBLACKLIST" == "on" ] || [ "$XS_UPDATE_GLOBALBLACKLIST" == "1" ] ; then
+  echo "Updating globalblacklist : /etc/nginx/conf.d/globalblacklist.conf"
+  file=""
+  if test -e "/etc/nginx/conf.d/globalblacklist.conf"; then zflag=(-z "/etc/nginx/conf.d/globalblacklist.conf"); else zflag=(); fi
+  if curl --compressed --fail --retry 5 -o "/tmp/globalblacklist.conf" "${zflag[@]}" "https://raw.githubusercontent.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/master/conf.d/globalblacklist.conf" ; then
+    mv -f /tmp/globalblacklist.conf /etc/nginx/conf.d/globalblacklist.conf
+  fi
+fi
+
+
 
 echo "#### Checking Nginx configs ####"
 nginx -t

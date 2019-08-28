@@ -33,6 +33,8 @@ Using a custom nginx build which always follows the latest official releases : h
 ## Features
 * Very small Docker image size
 * The logs of all the services are redirected to the output of the Docker container (visible with `docker logs -f <container name>`)
+* Custom implementation of nginx-ultimate-bad-bot-blocker with automatic updates
+* 
 
 ## Usage
 Development / Testing
