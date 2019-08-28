@@ -65,27 +65,27 @@ if [ -w "/etc/nginx/conf.d/" ] && [ -w "/etc/nginx/modules/" ] && [ -w "/etc/ngi
   XS_MAX_UPLOAD_SIZE=${XS_MAX_UPLOAD_SIZE%%m}
   echo "client_max_body_size ${XS_MAX_UPLOAD_SIZE}m;" > /etc/nginx/conf.d/max_upload_size.conf
 
-  if [ "$XS_DISABLE_SECURITYBLOCKS" == "yes" ] || [ "$XS_DISABLE_SECURITYBLOCKS" == "true" ] || [ "$XS_DISABLE_SECURITYBLOCKS" == "on" ] || [ "$XS_DISABLE_SECURITYBLOCKS" == "1" ] ; then
-    echo "Securityblocks Disabled"
-    mv -f /etc/nginx/include.d/securityblocks.conf /etc/nginx/include.d/securityblocks.disabled
-  else
-    if [ -f "/etc/nginx/include.d/securityblocks.disabled" ] ; then
-      mv -f /etc/nginx/include.d/securityblocks.disabled /etc/nginx/include.d/securityblocks.conf
-    fi
-  fi
-
-  if [ "$XS_DISABLE_BOTLIMIT" == "yes" ] || [ "$XS_DISABLE_BOTLIMIT" == "true" ] || [ "$XS_DISABLE_BOTLIMIT" == "on" ] || [ "$XS_DISABLE_BOTLIMIT" == "1" ] ; then
-    echo "Botlimit Disabled"
-    mv -f /etc/nginx/include.d/blockbots.conf /etc/nginx/include.d/blockbots.disabled
-    mv -f /etc/nginx/conf.d/botlimit.conf /etc/nginx/conf.d/botlimit.disabled
-  else
-    if [ -f "/etc/nginx/include.d/blockbots.disabled" ] ; then
-      mv -f /etc/nginx/include.d/blockbots.disabled /etc/nginx/include.d/blockbots.conf
-    fi
-    if [ -f "/etc/nginx/conf.d/botlimit.disabled" ] ; then
-      mv -f /etc/nginx/conf.d/botlimit.disabled /etc/nginx/conf.d/botlimit.conf
-    fi
-  fi
+  # if [ "$XS_DISABLE_SECURITYBLOCKS" == "yes" ] || [ "$XS_DISABLE_SECURITYBLOCKS" == "true" ] || [ "$XS_DISABLE_SECURITYBLOCKS" == "on" ] || [ "$XS_DISABLE_SECURITYBLOCKS" == "1" ] ; then
+  #   echo "Securityblocks Disabled"
+  #   mv -f /etc/nginx/include.d/securityblocks.conf /etc/nginx/include.d/securityblocks.disabled
+  # else
+  #   if [ -f "/etc/nginx/include.d/securityblocks.disabled" ] ; then
+  #     mv -f /etc/nginx/include.d/securityblocks.disabled /etc/nginx/include.d/securityblocks.conf
+  #   fi
+  # fi
+  #
+  # if [ "$XS_DISABLE_BOTLIMIT" == "yes" ] || [ "$XS_DISABLE_BOTLIMIT" == "true" ] || [ "$XS_DISABLE_BOTLIMIT" == "on" ] || [ "$XS_DISABLE_BOTLIMIT" == "1" ] ; then
+  #   echo "Botlimit Disabled"
+  #   mv -f /etc/nginx/include.d/blockbots.conf /etc/nginx/include.d/blockbots.disabled
+  #   mv -f /etc/nginx/conf.d/botlimit.conf /etc/nginx/conf.d/botlimit.disabled
+  # else
+  #   if [ -f "/etc/nginx/include.d/blockbots.disabled" ] ; then
+  #     mv -f /etc/nginx/include.d/blockbots.disabled /etc/nginx/include.d/blockbots.conf
+  #   fi
+  #   if [ -f "/etc/nginx/conf.d/botlimit.disabled" ] ; then
+  #     mv -f /etc/nginx/conf.d/botlimit.disabled /etc/nginx/conf.d/botlimit.conf
+  #   fi
+  # fi
 
   if [ "$XS_DISABLE_GEOIP" != "yes" ] && [ "$XS_DISABLE_GEOIP" != "true" ] && [ "$XS_DISABLE_GEOIP" != "on" ] && [ "$XS_DISABLE_GEOIP" != "1" ] ; then
     if [ -f "/usr/share/GeoIP/GeoIP.dat" ] ; then

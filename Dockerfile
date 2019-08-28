@@ -15,7 +15,10 @@ RUN echo "**** install runtime packages ****" \
 COPY rootfs/ /
 
 RUN chmod 777 /xshok-init.sh \
-  && chmod 755 /usr/sbin/htpasswd.sh
+&& chmod 755 /usr/sbin/htpasswd.sh
+
+RUN echo "**** Fetch Latest globalblacklist ****" \
+  && curl --compressed --fail --retry 5 -o "/etc/nginx/conf.d/globalblacklist.conf" -z "/etc/nginx/conf.d/globalblacklist.conf" "https://raw.githubusercontent.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/master/conf.d/globalblacklist.conf"
 
 WORKDIR /var/www/html
 
