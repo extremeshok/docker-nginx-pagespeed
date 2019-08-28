@@ -606,14 +606,9 @@ fi
 
 if [ "$XS_UPDATE_GLOBALBLACKLIST" == "yes" ] || [ "$XS_UPDATE_GLOBALBLACKLIST" == "true" ] || [ "$XS_UPDATE_GLOBALBLACKLIST" == "on" ] || [ "$XS_UPDATE_GLOBALBLACKLIST" == "1" ] ; then
   echo "Updating globalblacklist : /etc/nginx/conf.d/globalblacklist.conf"
-  file=""
   if test -e "/etc/nginx/conf.d/globalblacklist.conf"; then zflag=(-z "/etc/nginx/conf.d/globalblacklist.conf"); else zflag=(); fi
-  if curl --compressed --fail --retry 5 -o "/tmp/globalblacklist.conf" "${zflag[@]}" "https://raw.githubusercontent.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/master/conf.d/globalblacklist.conf" ; then
-    mv -f /tmp/globalblacklist.conf /etc/nginx/conf.d/globalblacklist.conf
-  fi
+  curl --compressed --fail --retry 5 -o "/etc/nginx/conf.d/globalblacklist.conf" "${zflag[@]}" "https://raw.githubusercontent.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/master/conf.d/globalblacklist.conf"
 fi
-
-
 
 echo "#### Checking Nginx configs ####"
 nginx -t
