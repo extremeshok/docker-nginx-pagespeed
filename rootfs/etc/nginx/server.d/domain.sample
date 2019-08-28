@@ -37,6 +37,8 @@ server
   ## verify chain of trust of OCSP response using Root CA and Intermediate certs
   ssl_trusted_certificate /certs/test.domain.sample/chain.pem;
 
+  include /etc/nginx/include.blocks.d/*.conf;
+
   pagespeed on;
   pagespeed Domain https://test.domain.sample;
 
