@@ -490,7 +490,7 @@ fi
 
       cat <<EOF >> "/etc/nginx/server.d/${primary_hostname}.conf"
 location ~* /(wp-login\.php) {
-    limit_req zone=xwplogin burst=1 nodelay;
+    limit_req zone=xwplogin burst=10 nodelay;
     limit_conn xwpconlimit 30;
     #auth_basic "Private";
     #auth_basic_user_file htpasswd.conf;
@@ -499,28 +499,28 @@ location ~* /(wp-login\.php) {
 
 location ~* /(xmlrpc\.php) {
     ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=45 nodelay;
+    limit_req zone=xwprpc burst=100 nodelay;
     limit_conn xwpconlimit 30;
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(load-scripts\.php) {
     ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=10 nodelay;
+    limit_req zone=xwprpc burst=100 nodelay;
     limit_conn xwpconlimit 30;
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(load-styles\.php) {
     ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=10 nodelay;
+    limit_req zone=xwprpc burst=100 nodelay;
     limit_conn xwpconlimit 30;
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(admin-ajax\.php) {
     ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=10 nodelay;
+    limit_req zone=xwprpc burst=100 nodelay;
     limit_conn xwpconlimit 30;
     include /etc/nginx/includes/php.conf;
 }
