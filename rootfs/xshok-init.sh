@@ -499,29 +499,29 @@ location ~* /(wp-login\.php) {
 
 location ~* /(xmlrpc\.php) {
     ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=100 nodelay;
-    limit_conn xwpconlimit 30;
+    limit_req zone=xwprpc burst=40 nodelay;
+    limit_conn xwpconlimit 20;
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(load-scripts\.php) {
     ${disable_pagespeed_string}
     limit_req zone=xwprpc burst=100 nodelay;
-    limit_conn xwpconlimit 30;
+    limit_conn xwpconlimit 60;
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(load-styles\.php) {
     ${disable_pagespeed_string}
     limit_req zone=xwprpc burst=100 nodelay;
-    limit_conn xwpconlimit 30;
+    limit_conn xwpconlimit 60;
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(admin-ajax\.php) {
     ${disable_pagespeed_string}
     limit_req zone=xwprpc burst=100 nodelay;
-    limit_conn xwpconlimit 30;
+    limit_conn xwpconlimit 60;
     include /etc/nginx/includes/php.conf;
 }
 
