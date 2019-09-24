@@ -506,21 +506,21 @@ location ~* /(xmlrpc\.php) {
 
 location ~* /wp-admin/(load-scripts\.php) {
     ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=5 nodelay;
+    limit_req zone=xwprpc burst=10 nodelay;
     limit_conn xwpconlimit 30;
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(load-styles\.php) {
     ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=5 nodelay;
+    limit_req zone=xwprpc burst=10 nodelay;
     limit_conn xwpconlimit 30;
     include /etc/nginx/includes/php.conf;
 }
 
 location ~* /wp-admin/(admin-ajax\.php) {
     ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=5 nodelay;
+    limit_req zone=xwprpc burst=10 nodelay;
     limit_conn xwpconlimit 30;
     include /etc/nginx/includes/php.conf;
 }
