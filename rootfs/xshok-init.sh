@@ -504,26 +504,26 @@ location ~* /(xmlrpc\.php) {
     include /etc/nginx/includes/php.conf;
 }
 
-location ~* /wp-admin/(load-scripts\.php) {
-    ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=100 nodelay;
-    limit_conn xwpconlimit 60;
-    include /etc/nginx/includes/php.conf;
-}
-
-location ~* /wp-admin/(load-styles\.php) {
-    ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=100 nodelay;
-    limit_conn xwpconlimit 60;
-    include /etc/nginx/includes/php.conf;
-}
-
-location ~* /wp-admin/(admin-ajax\.php) {
-    ${disable_pagespeed_string}
-    limit_req zone=xwprpc burst=100 nodelay;
-    limit_conn xwpconlimit 60;
-    include /etc/nginx/includes/php.conf;
-}
+# location ~* /wp-admin/(load-scripts\.php) {
+#     ${disable_pagespeed_string}
+#     limit_req zone=xwprpc burst=100 nodelay;
+#     limit_conn xwpconlimit 60;
+#     include /etc/nginx/includes/php.conf;
+# }
+#
+# location ~* /wp-admin/(load-styles\.php) {
+#     ${disable_pagespeed_string}
+#     limit_req zone=xwprpc burst=100 nodelay;
+#     limit_conn xwpconlimit 60;
+#     include /etc/nginx/includes/php.conf;
+# }
+#
+# location ~* /wp-admin/(admin-ajax\.php) {
+#     ${disable_pagespeed_string}
+#     limit_req zone=xwprpc burst=100 nodelay;
+#     limit_conn xwpconlimit 60;
+#     include /etc/nginx/includes/php.conf;
+# }
 
 location ~* /wp-admin/ {
     ${disable_pagespeed_string}
