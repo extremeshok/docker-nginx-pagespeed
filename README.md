@@ -34,7 +34,7 @@ Using a custom nginx build which always follows the latest official releases : h
 * Very small Docker image size
 * The logs of all the services are redirected to the output of the Docker container (visible with `docker logs -f <container name>`)
 * Custom implementation of nginx-ultimate-bad-bot-blocker with automatic updates
-* 
+* Monitor /certs for changes and reload nginx
 
 ## Usage
 Development / Testing

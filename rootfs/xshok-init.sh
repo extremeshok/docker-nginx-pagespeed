@@ -20,6 +20,8 @@ XS_DOMAINS=${NGINX_DOMAINS:-$HOSTNAME}
 
 XS_CHOWN=${NGINX_CHOWN:-yes}
 
+XS_MONTIOR_CERTS=${NGINX_MONTIOR_CERTS:-yes}
+
 XS_DISABLE_REWRITES=${NGINX_DISABLE_REWRITES:-no}
 XS_DISABLE_PAGESPEED=${NGINX_DISABLE_PAGESPEED:-no}
 XS_DISABLE_GEOIP=${NGINX_DISABLE_GEOIP:-no}
@@ -638,6 +640,11 @@ if [ "$XS_CHOWN" == "yes" ] || [ "$XS_CHOWN" == "true" ] || [ "$XS_CHOWN" == "on
     chown -f -R nginx:nginx /var/cache/pagespeed
   fi
   chmod -R 777 /var/cache
+fi
+
+if [ "$XS_MONTIOR_CERTS" == "yes" ] || [ "$XS_MONTIOR_CERTS" == "true" ] || [ "$XS_MONTIOR_CERTS" == "on" ] || [ "$XS_MONTIOR_CERTS" == "1" ] ; then
+  echo "Monitoring /certs for changes"
+  /xshok-monitor-certs.sh &
 fi
 
 echo "#### Nginx Starting ####"
